@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados DPvP - Caminos del Ser</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #F8F7F2; color: #6B6661; }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; color: #070404; }
+        .btn-brand { background-color: #E8A613; color: white; padding: 12px 30px; border-radius: 9999px; font-weight: 600; transition: background-color 0.3s ease; }
+        .btn-brand:hover { background-color: #d4940f; }
+        .card { background-color: white; border-radius: 16px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .demographic-item { border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
+        .demographic-item:last-child { border-bottom: none; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-[#F8F7F2] py-4 px-8 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html">
+                <img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto">
+            </a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html#about" class="text-[#6B6661] hover:text-[#E8A613]">Sobre Mí</a>
+                <a href="index.html#services" class="text-[#6B6661] hover:text-[#E8A613]">Servicios</a>
+                <a href="dpvp.html" class="text-[#E8A613] font-semibold">Escala DPvP</a>
+                <a href="index.html#contact" class="text-[#6B6661] hover:text-[#E8A613]">Contacto</a>
+            </nav>
+            <button class="md:hidden text-3xl text-[#070404]">&#9776;</button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-20">
+
+        <!-- VISTA PÚBLICA PARA LA PAREJA -->
+        <section id="vistaPublica" class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">¡Gracias por completar el diagnóstico!</h1>
+            <p class="text-xl mb-8" id="nombresPareja"></p>
+            <p class="mb-12">Han dado un paso valiente y significativo hacia la construcción de un proyecto de vida en común más consciente. A continuación, revelamos dos hallazgos clave de su diagnóstico:</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card text-left bg-green-50 border border-green-200">
+                    <h3 class="text-2xl font-bold text-green-800 mb-3">Su Mayor Fortaleza</h3>
+                    <p class="text-lg font-semibold text-green-700 mb-3" id="ambitoFuerte"></p>
+                    <p class="text-green-600">Este es el pilar de su relación. Representa un área de gran acuerdo y sinergia. Es la base desde la cual pueden construir y superar otros desafíos.</p>
+                </div>
+                <div class="card text-left bg-red-50 border border-red-200">
+                    <h3 class="text-2xl font-bold text-red-800 mb-3">Su Área Clave de Crecimiento</h3>
+                    <p class="text-lg font-semibold text-red-700 mb-3" id="ambitoDebil"></p>
+                    <p class="text-red-600">Aquí se encuentra su mayor oportunidad para crecer juntos. Abordar este ámbito fortalecerá su comunicación, confianza y proyecto de vida a largo plazo.</p>
+                </div>
+            </div>
+
+            <div class="card mt-12 bg-gray-800 text-white">
+                <h2 class="text-3xl font-bold mb-4 text-white">¿Quieren ver el mapa completo?</h2>
+                <p class="mb-8">Estos resultados son solo la punta del iceberg. El informe completo revela las dinámicas en los 8 ámbitos de su vida. El siguiente paso es interpretarlos juntos en una sesión de diagnóstico, la cual puede ser presencial en la ciudad de Barranquilla - Colombia o virtual desde cualquier lugar del mundo.</p>
+                <a href="https://wa.me/573233796547?text=Hola,%20hemos%20completado%20la%20Escala%20DPvP%20y%20nos%20gustaría%20agendar%20una%20sesión%20de%20diagnóstico." target="_blank" class="btn-brand inline-block">Agendar una Sesión de Diagnóstico</a>
+            </div>
+        </section>
+
+        <!-- VISTA PRIVADA PARA EL TERAPEUTA (Oculta por defecto) -->
+        <section id="vistaPrivada" class="hidden max-w-5xl mx-auto mt-12">
+             <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Resultados del Diagnóstico (Modo Terapeuta)</h2>
+             
+             <!-- CAMBIO: Nueva sección de datos demográficos -->
+             <div id="datosDemograficos" class="card mb-8"></div>
+
+             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 card">
+                    <h3 class="text-2xl font-bold mb-4 text-center">Rueda de Proyecto de Vida en Pareja</h3>
+                    <canvas id="graficaResultados"></canvas>
+                </div>
+                <div class="lg:col-span-2 card">
+                    <h3 class="text-2xl font-bold mb-4 text-center">Puntuaciones por Ámbito</h3>
+                    <table class="w-full">
+                        <thead class="border-b-2 border-gray-200">
+                            <tr>
+                                <th class="py-2 text-left font-semibold">Ámbito</th>
+                                <th class="py-2 text-right font-semibold">Puntaje (/10)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaResultados"></tbody>
+                    </table>
+                </div>
+                <div class="lg:col-span-5 card mt-4">
+                    <h3 class="text-2xl font-bold mb-4">Interpretación Preliminar</h3>
+                    <div id="interpretacionResultados"></div>
+                </div>
+                <!-- CAMBIO: Nueva sección de respuestas detalladas -->
+                <div id="respuestasDetalladas" class="lg:col-span-5 card mt-4"></div>
+             </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#070404] text-white py-12">
+        <div class="container mx-auto text-center">
+            <p class="text-gray-400">&copy; 2025 Jorge Arango Castaño - Caminos del Ser. Todos los derechos reservados.</p>
+            <button id="loginTerapeuta" class="text-sm text-gray-500 hover:text-white mt-4">Acceso Terapeuta</button>
+        </div>
+    </footer>
+
+    <script>
+        let chartInstance = null;
+        const ambitosTextos = {
+            "Ámbito Económico": ["1. ¿Ambos participan en la construcción del presupuesto familiar?", "2. ¿Ambos miembros aportan económicamente?", "3. ¿Ambos consideran que tienen un buen acuerdo en lo económico?", "4. ¿Ambos son sinceros con su pareja en el tema económico?"],
+            "Ámbito Emocional": ["5. ¿Ambos consideran que hay adecuada comunicación en la pareja?", "6. ¿Ambos se respetan totalmente, sin presencia de algún tipo de maltrato? (físico, verbal, etc.)", "7. ¿Ambos sienten aún amor por su pareja?", "8. ¿Ambos están de acuerdo en todos los temas sexuales en la pareja?"],
+            "Ámbito Salud": ["9. ¿Ambos están sanos, sin ninguna enfermedad/discapacidad grave o importante?", "10. ¿Ambos tienen cobertura de salud?", "11. ¿Ambos atienden con celeridad cuando se presenta algún tema de salud?", "12. ¿Ambos apoyan cualquier situación de salud que se presente en la familia?"],
+            "Ámbito Laboral": ["13. ¿Ambos miembros se sienten realizados profesional/laboralmente?", "14. ¿Ambos miembros tienen algún tipo de trabajo remunerado?", "15. ¿Ambos han propuesto un plan de vida para la vejez?", "16. ¿Ambos se sienten apoyados laboralmente por su pareja?"],
+            "Ámbito Ocio": ["17. ¿Ambos reconocen gustos y hobbies en común?", "18. ¿Ambos han creado/propuesto algún espacio exclusivo para compartir como pareja?", "19. ¿Ambos miembros tienen espacios individuales para sí mismos?", "20. ¿Ambos celebran y recuerdan fechas especiales como cumpleaños y aniversarios?"],
+            "Ámbito Hijos": ["21. ¿Ambos hablaron con claridad el tema de los hijos antes de vivir en pareja?", "22. ¿Ambos estuvieron o están de acuerdo en el número de hijos a tener?", "23. ¿Ambos se sienten libres de presión por el tema de los hijos?", "24. ¿Ambos están de acuerdo en el tema de mascotas en el hogar?"],
+            "Ámbito Hogar": ["25. ¿Ambos participaron en la escogencia del lugar donde viven?", "26. ¿Ambos se sienten a gusto y felices en el lugar donde viven?", "27. ¿Ambos permitirían convivir con otras personas diferentes a la pareja e hijos?", "28. ¿Ambos realizan por igual o bajo un acuerdo las tareas del hogar?"],
+            "Ámbito Espiritual": ["29. ¿Ambos miembros comparten la misma creencia religiosa/espiritual?", "30. ¿Ambos aceptan las creencias personales de la pareja?", "31. ¿Ambos miembros de la pareja son felices?", "32. ¿Ambos miembros desean continuar en su relación de pareja actual?"]
+        };
+
+        function mostrarVistaPublica(resultados) {
+            const datosPareja = JSON.parse(sessionStorage.getItem('dpvpPareja'));
+            if (datosPareja) {
+                document.getElementById('nombresPareja').textContent = `${datosPareja.m1_nombre} y ${datosPareja.m2_nombre},`;
+            }
+
+            const ambitosOrdenados = Object.entries(resultados).sort((a, b) => a[1] - b[1]);
+            document.getElementById('ambitoDebil').textContent = ambitosOrdenados[0][0];
+            document.getElementById('ambitoFuerte').textContent = ambitosOrdenados[ambitosOrdenados.length - 1][0];
+        }
+
+        function mostrarVistaPrivada(datosCompletos) {
+            const resultados = datosCompletos.resultados;
+            const detalles = datosCompletos.detalles;
+            const datosPareja = JSON.parse(sessionStorage.getItem('dpvpPareja'));
+
+            document.getElementById('vistaPublica').classList.add('hidden');
+            document.getElementById('vistaPrivada').classList.remove('hidden');
+
+            // Poblar datos demográficos
+            const demoContainer = document.getElementById('datosDemograficos');
+            let demoHtml = `<h3 class="text-2xl font-bold mb-4 text-center">Datos de la Pareja</h3>`;
+            if (datosPareja) {
+                const unionMap = { religion: 'Casados por religión', civil: 'Casados por lo civil', union_libre: 'Unión Libre' };
+                demoHtml += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+                        <div>
+                            <p class="demographic-item"><strong>Miembro 1:</strong> ${datosPareja.m1_nombre} (${datosPareja.m1_edad} años)</p>
+                            <p class="demographic-item"><strong>Ocupación:</strong> ${datosPareja.m1_ocupacion}</p>
+                        </div>
+                        <div>
+                            <p class="demographic-item"><strong>Miembro 2:</strong> ${datosPareja.m2_nombre} (${datosPareja.m2_edad} años)</p>
+                            <p class="demographic-item"><strong>Ocupación:</strong> ${datosPareja.m2_ocupacion}</p>
+                        </div>
+                        <div class="md:col-span-2 border-t mt-4 pt-4">
+                            <p class="demographic-item"><strong>Tiempo total de relación:</strong> ${datosPareja.tiempo_relacion} años</p>
+                            <p class="demographic-item"><strong>Tiempo de convivencia:</strong> ${datosPareja.tiempo_convivencia} años</p>
+                            <p class="demographic-item"><strong>Tipo de Unión:</strong> ${unionMap[datosPareja.tipo_union] || 'No especificado'}</p>
+                            ${(datosPareja.tipo_union === 'religion' || datosPareja.tipo_union === 'civil') ? `<p class="demographic-item"><strong>Años de casados:</strong> ${datosPareja.anos_casados} años</p>` : ''}
+                            <p class="demographic-item"><strong>Hijos:</strong> ${datosPareja.num_hijos} | <strong>Mascotas:</strong> ${datosPareja.num_mascotas}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            demoContainer.innerHTML = demoHtml;
+
+            // Poblar tabla de puntuaciones
+            const tablaBody = document.getElementById('tablaResultados');
+            tablaBody.innerHTML = '';
+            const ambitosOrdenados = Object.keys(resultados).sort((a, b) => resultados[b] - resultados[a]);
+            ambitosOrdenados.forEach(ambito => {
+                const puntaje = resultados[ambito];
+                const fila = document.createElement('tr');
+                fila.className = 'border-t border-gray-100';
+                fila.innerHTML = `<td class="py-3">${ambito}</td><td class="py-3 text-right font-bold ${puntaje < 5 ? 'text-red-600' : puntaje >= 8 ? 'text-green-600' : 'text-yellow-600'}">${puntaje.toFixed(2)}</td>`;
+                tablaBody.appendChild(fila);
+            });
+
+            // Poblar respuestas detalladas
+            const respuestasContainer = document.getElementById('respuestasDetalladas');
+            let respuestasHtml = `<h3 class="text-2xl font-bold mb-4 text-center">Respuestas Detalladas</h3><div class="space-y-4">`;
+            Object.keys(ambitosTextos).forEach(ambito => {
+                respuestasHtml += `<div><h4 class="text-xl font-semibold mb-2">${ambito}</h4><ul class="list-disc list-inside space-y-1">`;
+                ambitosTextos[ambito].forEach((pregunta, index) => {
+                    const respuesta = detalles[ambito][index];
+                    let respuestaTexto = '';
+                    if (typeof respuesta === 'object' && respuesta.respuesta === 'Solo Uno') {
+                        const nombreQuien = respuesta.quien === 'Miembro 1' ? datosPareja.m1_nombre : datosPareja.m2_nombre;
+                        respuestaTexto = `<strong>Solo Uno</strong> (Seleccionado: ${nombreQuien})`;
+                    } else {
+                        respuestaTexto = `<strong>${respuesta}</strong>`;
+                    }
+                    respuestasHtml += `<li>${pregunta}: ${respuestaTexto}</li>`;
+                });
+                respuestasHtml += `</ul></div>`;
+            });
+            respuestasHtml += `</div>`;
+            respuestasContainer.innerHTML = respuestasHtml;
+
+            generarInterpretacion(resultados);
+
+            // Generar gráfica
+            const ctx = document.getElementById('graficaResultados').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: Object.keys(resultados),
+                    datasets: [{
+                        label: 'Puntuación por Ámbito',
+                        data: Object.values(resultados),
+                        backgroundColor: ['rgba(232, 166, 19, 0.7)', 'rgba(7, 4, 4, 0.7)', 'rgba(0, 180, 216, 0.7)', 'rgba(0, 119, 182, 0.7)', 'rgba(244, 143, 177, 0.7)', 'rgba(100, 181, 246, 0.7)', 'rgba(129, 199, 132, 0.7)', 'rgba(186, 104, 200, 0.7)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: { scales: { r: { max: 10, min: 0, ticks: { stepSize: 2 } } } }
+            });
+        }
+
+        function generarInterpretacion(resultados) {
+            const container = document.getElementById('interpretacionResultados');
+            const criticos = Object.entries(resultados).filter(([, p]) => p < 5).sort((a, b) => a[1] - b[1]);
+            const fuertes = Object.entries(resultados).filter(([, p]) => p >= 8).sort((a, b) => b[1] - a[1]);
+            let html = `<p class="mb-4">Análisis preliminar para guiar la entrevista clínica.</p>`;
+            if (criticos.length > 0) {
+                html += `<h4 class="text-xl font-bold text-red-700 mt-6 mb-2">Áreas Prioritarias (< 5.0)</h4><ul class="list-disc list-inside space-y-2">`;
+                criticos.forEach(([ambito, puntaje]) => { html += `<li><strong>${ambito}:</strong> <span class="font-bold text-red-600">${puntaje.toFixed(2)}</span> - Indica desconexión significativa.</li>`; });
+                html += `</ul>`;
+            }
+            if (fuertes.length > 0) {
+                html += `<h4 class="text-xl font-bold text-green-700 mt-6 mb-2">Fortalezas (≥ 8.0)</h4><ul class="list-disc list-inside space-y-2">`;
+                fuertes.forEach(([ambito, puntaje]) => { html += `<li><strong>${ambito}:</strong> <span class="font-bold text-green-600">${puntaje.toFixed(2)}</span> - Representa una base sólida de consenso.</li>`; });
+                html += `</ul>`;
+            }
+            container.innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const data = urlParams.get('data');
+
+            if (!data) {
+                document.getElementById('vistaPublica').innerHTML = '<h1 class="text-3xl text-center">No se encontraron datos. Por favor, complete primero el cuestionario.</h1>';
+                return;
+            }
+
+            try {
+                const datosCompletos = JSON.parse(atob(data));
+                const resultados = datosCompletos.resultados;
+
+                if (!resultados) { throw new Error("Resultados no encontrados."); }
+                
+                if (sessionStorage.getItem('terapeutaMode') === 'true') {
+                    mostrarVistaPrivada(datosCompletos);
+                } else {
+                    mostrarVistaPublica(resultados);
+                }
+
+                document.getElementById('loginTerapeuta').addEventListener('click', () => {
+                    const pass = prompt('Ingrese la contraseña de terapeuta:');
+                    if (pass === 'Ja#020904*DPvP') { 
+                        sessionStorage.setItem('terapeutaMode', 'true');
+                        mostrarVistaPrivada(datosCompletos);
+                    } else if (pass) {
+                        alert('Contraseña incorrecta.');
+                    }
+                });
+
+            } catch (e) {
+                console.error("Error al decodificar los datos:", e);
+                document.getElementById('vistaPublica').innerHTML = '<h1 class="text-3xl text-center">Error al procesar los resultados.</h1>';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "dpvp-functions",
+  "version": "1.0.0",
+  "description": "Funciones para la app DPvP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jorge Arango",
+  "license": "ISC",
+  "dependencies": {
+    "nodemailer": "^6.9.14",
+    "pdf-lib": "^1.17.1"
+  }
+}
