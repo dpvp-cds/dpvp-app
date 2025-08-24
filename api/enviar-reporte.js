@@ -2,15 +2,16 @@
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const nodemailer = require('nodemailer');
 
-// Esta es la función principal que se ejecutará cuando el formulario se envíe
+// Esta es la función principal que Vercel ejecutará
 export default async function handler(request, response) {
     // 1. Recibir y procesar los datos enviados desde el formulario
-    const data = JSON.parse(event.body);
+    // Vercel entrega los datos directamente en request.body
+    const data = request.body;
     const { demograficos, resultados, detalles } = data;
 
     // 2. Crear un nuevo documento PDF
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage();
+    let page = pdfDoc.addPage();
     const { width, height } = page.getSize();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -67,6 +68,8 @@ export default async function handler(request, response) {
             } else {
                 respuestaTexto = respuesta;
             }
+            // Asumimos que tenemos acceso a los textos de las preguntas para mayor claridad
+            // En una versión futura, podríamos pasar los textos de las preguntas también
             drawText(`- Pregunta ${index + 1}: ${respuestaTexto}`);
         });
     }
@@ -75,11 +78,11 @@ export default async function handler(request, response) {
     const pdfBytes = await pdfDoc.save();
 
     // 5. Configurar el servicio de correo
-    // Estas variables las configuraremos de forma segura en Netlify
+    // Estas variables las configuramos de forma segura en Vercel
     const transporter = nodemailer.createTransport({
         host: process.env.MAIL_HOST,
         port: process.env.MAIL_PORT,
-        secure: true,
+        secure: true, // true for 465, false for other ports
         auth: {
             user: process.env.MAIL_USER,
             pass: process.env.MAIL_PASS,
@@ -101,16 +104,11 @@ export default async function handler(request, response) {
         });
 
         // 7. Si todo sale bien, responder al navegador que el envío fue exitoso
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ message: 'Correo enviado con éxito' }),
-        };
+        response.status(200).json({ message: 'Correo enviado con éxito' });
+
     } catch (error) {
         console.error('Error al enviar el correo:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: 'Fallo al enviar el correo' }),
-        };
+        // Enviar una respuesta de error al navegador
+        response.status(500).json({ error: 'Fallo al enviar el correo' });
     }
-};
-
+}
