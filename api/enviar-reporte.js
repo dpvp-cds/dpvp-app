@@ -3,7 +3,7 @@ const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const nodemailer = require('nodemailer');
 
 // Esta es la función principal que se ejecutará cuando el formulario se envíe
-exports.handler = async function(event, context) {
+export default async function handler(request, response) {
     // 1. Recibir y procesar los datos enviados desde el formulario
     const data = JSON.parse(event.body);
     const { demograficos, resultados, detalles } = data;
@@ -113,3 +113,4 @@ exports.handler = async function(event, context) {
         };
     }
 };
+
