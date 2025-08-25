@@ -1,26 +1,27 @@
-// Importa las herramientas necesarias para crear PDF y enviar correos
+// Importa las herramientas necesarias
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 // Esta es la función principal que Vercel ejecutará
 export default async function handler(request, response) {
-    // 1. Recibir y procesar los datos enviados desde el formulario
-    // Vercel entrega los datos directamente en request.body
+    // 1. Inicializa Resend con tu API Key secreta
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    // 2. Recibir y procesar los datos enviados desde el formulario
     const data = request.body;
     const { demograficos, resultados, detalles } = data;
 
-    // 2. Crear un nuevo documento PDF
+    // 3. Crear un nuevo documento PDF (esta parte no cambia)
     const pdfDoc = await PDFDocument.create();
     let page = pdfDoc.addPage();
     const { width, height } = page.getSize();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    let y = height - 50; // Posición inicial para escribir en el PDF (desde arriba)
+    let y = height - 50;
 
-    // Función para añadir texto al PDF y bajar la posición
     function drawText(text, options = {}) {
-        if (y < 50) { // Si nos quedamos sin espacio, añade una nueva página
+        if (y < 50) {
             page = pdfDoc.addPage();
             y = height - 50;
         }
@@ -31,13 +32,11 @@ export default async function handler(request, response) {
             size: options.size || 11,
             color: options.color || rgb(0, 0, 0),
         });
-        y -= (options.size || 11) + 5; // Mover hacia abajo para la siguiente línea
+        y -= (options.size || 11) + 5;
     }
 
-    // 3. Escribir toda la información en el PDF
     drawText('Reporte de Diagnóstico DPvP', { bold: true, size: 18 });
     y -= 10;
-
     drawText('Datos Demográficos', { bold: true, size: 14 });
     drawText(`Miembro 1: ${demograficos.m1_nombre} (${demograficos.m1_edad} años) - Ocupación: ${demograficos.m1_ocupacion}`);
     drawText(`Miembro 2: ${demograficos.m2_nombre} (${demograficos.m2_edad} años) - Ocupación: ${demograficos.m2_ocupacion}`);
@@ -49,15 +48,13 @@ export default async function handler(request, response) {
     }
     drawText(`Hijos: ${demograficos.num_hijos} | Mascotas: ${demograficos.num_mascotas}`);
     y -= 10;
-
     drawText('Resultados Cuantitativos', { bold: true, size: 14 });
     for (const ambito in resultados) {
         drawText(`${ambito}: ${resultados[ambito].toFixed(2)} / 10.00`);
     }
     y -= 10;
-
     drawText('Respuestas Detalladas', { bold: true, size: 14 });
-    for (const ambito in detalles) {
+     for (const ambito in detalles) {
         y -= 5;
         drawText(ambito, { bold: true });
         detalles[ambito].forEach((respuesta, index) => {
@@ -68,47 +65,29 @@ export default async function handler(request, response) {
             } else {
                 respuestaTexto = respuesta;
             }
-            // Asumimos que tenemos acceso a los textos de las preguntas para mayor claridad
-            // En una versión futura, podríamos pasar los textos de las preguntas también
             drawText(`- Pregunta ${index + 1}: ${respuestaTexto}`);
         });
     }
 
-    // 4. Guardar el PDF como un buffer de bytes
     const pdfBytes = await pdfDoc.save();
 
-    // 5. Configurar el servicio de correo
-    // Estas variables las configuramos de forma segura en Vercel
-    const transporter = nodemailer.createTransport({
-        host: process.env.MAIL_HOST,
-        port: process.env.MAIL_PORT,
-        secure: true, // true for 465, false for other ports
-        auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASS,
-        },
-    });
-
-    // 6. Enviar el correo con el PDF adjunto
+    // 4. Enviar el correo usando Resend
     try {
-        await transporter.sendMail({
-            from: `"Reportes DPvP" <${process.env.MAIL_USER}>`,
+        await resend.emails.send({
+            from: 'Reportes DPvP <onboarding@resend.dev>', // Resend requiere este remitente genérico en el plan gratuito
             to: 'dpvp.cds@emcotic.com',
             subject: `Nuevo Diagnóstico: ${demograficos.m1_nombre} y ${demograficos.m2_nombre}`,
-            text: 'Se adjunta el reporte en PDF con los resultados del diagnóstico DPvP.',
+            html: '<p>Se adjunta el reporte en PDF con los resultados del diagnóstico DPvP.</p>',
             attachments: [{
                 filename: `Reporte_DPvP_${demograficos.m1_nombre}_${demograficos.m2_nombre}.pdf`,
                 content: Buffer.from(pdfBytes),
-                contentType: 'application/pdf',
-            }, ],
+            }],
         });
 
-        // 7. Si todo sale bien, responder al navegador que el envío fue exitoso
         response.status(200).json({ message: 'Correo enviado con éxito' });
 
     } catch (error) {
         console.error('Error al enviar el correo:', error);
-        // Enviar una respuesta de error al navegador
         response.status(500).json({ error: 'Fallo al enviar el correo' });
     }
 }
