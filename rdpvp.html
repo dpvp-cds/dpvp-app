@@ -27,10 +27,10 @@
                 <img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto">
             </a>
             <nav class="hidden md:flex space-x-8">
-                <a href="index.html#about" class="text-[#6B6661] hover:text-[#E8A613]">Sobre Mí</a>
-                <a href="index.html#services" class="text-[#6B6661] hover:text-[#E8A613]">Servicios</a>
-                <a href="dpvp.html" class="text-[#E8A613] font-semibold">Escala DPvP</a>
-                <a href="index.html#contact" class="text-[#6B6661] hover:text-[#E8A613]">Contacto</a>
+                <a href="https://www.caminosdelser.co/#about" class="text-[#6B6661] hover:text-[#E8A613]">Sobre Mí</a>
+                <a href="https://www.caminosdelser.co/#services" class="text-[#6B6661] hover:text-[#E8A613]">Servicios</a>
+                <a href="index.html" class="text-[#E8A613] font-semibold">Escala DPvP</a>
+                <a href="https://www.caminosdelser.co/#contact" class="text-[#6B6661] hover:text-[#E8A613]">Contacto</a>
             </nav>
             <button class="md:hidden text-3xl text-[#070404]">&#9776;</button>
         </div>
@@ -68,7 +68,6 @@
         <section id="vistaPrivada" class="hidden max-w-5xl mx-auto mt-12">
              <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Resultados del Diagnóstico (Modo Terapeuta)</h2>
              
-             <!-- CAMBIO: Nueva sección de datos demográficos -->
              <div id="datosDemograficos" class="card mb-8"></div>
 
              <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -92,7 +91,6 @@
                     <h3 class="text-2xl font-bold mb-4">Interpretación Preliminar</h3>
                     <div id="interpretacionResultados"></div>
                 </div>
-                <!-- CAMBIO: Nueva sección de respuestas detalladas -->
                 <div id="respuestasDetalladas" class="lg:col-span-5 card mt-4"></div>
              </div>
         </section>
@@ -119,8 +117,7 @@
             "Ámbito Espiritual": ["29. ¿Ambos miembros comparten la misma creencia religiosa/espiritual?", "30. ¿Ambos aceptan las creencias personales de la pareja?", "31. ¿Ambos miembros de la pareja son felices?", "32. ¿Ambos miembros desean continuar en su relación de pareja actual?"]
         };
 
-        function mostrarVistaPublica(resultados) {
-            const datosPareja = JSON.parse(sessionStorage.getItem('dpvpPareja'));
+        function mostrarVistaPublica(resultados, datosPareja) {
             if (datosPareja) {
                 document.getElementById('nombresPareja').textContent = `${datosPareja.m1_nombre} y ${datosPareja.m2_nombre},`;
             }
@@ -133,16 +130,15 @@
         function mostrarVistaPrivada(datosCompletos) {
             const resultados = datosCompletos.resultados;
             const detalles = datosCompletos.detalles;
-            const datosPareja = JSON.parse(sessionStorage.getItem('dpvpPareja'));
+            const datosPareja = datosCompletos.demograficos;
 
             document.getElementById('vistaPublica').classList.add('hidden');
             document.getElementById('vistaPrivada').classList.remove('hidden');
 
-            // Poblar datos demográficos
             const demoContainer = document.getElementById('datosDemograficos');
             let demoHtml = `<h3 class="text-2xl font-bold mb-4 text-center">Datos de la Pareja</h3>`;
             if (datosPareja) {
-                const unionMap = { religion: 'Casados por religión', civil: 'Casados por lo civil', union_libre: 'Unión Libre' };
+                const unionMap = { solo_novios: 'Solo novios (sin convivir)', union_libre: 'Unión Libre', religion: 'Casados por religión', civil: 'Casados por lo civil' };
                 demoHtml += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
                         <div>
@@ -155,7 +151,7 @@
                         </div>
                         <div class="md:col-span-2 border-t mt-4 pt-4">
                             <p class="demographic-item"><strong>Tiempo total de relación:</strong> ${datosPareja.tiempo_relacion} años</p>
-                            <p class="demographic-item"><strong>Tiempo de convivencia:</strong> ${datosPareja.tiempo_convivencia} años</p>
+                            ${datosPareja.tipo_union !== 'solo_novios' ? `<p class="demographic-item"><strong>Tiempo de convivencia:</strong> ${datosPareja.tiempo_convivencia} años</p>` : ''}
                             <p class="demographic-item"><strong>Tipo de Unión:</strong> ${unionMap[datosPareja.tipo_union] || 'No especificado'}</p>
                             ${(datosPareja.tipo_union === 'religion' || datosPareja.tipo_union === 'civil') ? `<p class="demographic-item"><strong>Años de casados:</strong> ${datosPareja.anos_casados} años</p>` : ''}
                             <p class="demographic-item"><strong>Hijos:</strong> ${datosPareja.num_hijos} | <strong>Mascotas:</strong> ${datosPareja.num_mascotas}</p>
@@ -165,7 +161,6 @@
             }
             demoContainer.innerHTML = demoHtml;
 
-            // Poblar tabla de puntuaciones
             const tablaBody = document.getElementById('tablaResultados');
             tablaBody.innerHTML = '';
             const ambitosOrdenados = Object.keys(resultados).sort((a, b) => resultados[b] - resultados[a]);
@@ -177,7 +172,6 @@
                 tablaBody.appendChild(fila);
             });
 
-            // Poblar respuestas detalladas
             const respuestasContainer = document.getElementById('respuestasDetalladas');
             let respuestasHtml = `<h3 class="text-2xl font-bold mb-4 text-center">Respuestas Detalladas</h3><div class="space-y-4">`;
             Object.keys(ambitosTextos).forEach(ambito => {
@@ -200,7 +194,6 @@
 
             generarInterpretacion(resultados);
 
-            // Generar gráfica
             const ctx = document.getElementById('graficaResultados').getContext('2d');
             if (chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, {
@@ -237,41 +230,52 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // CORRECCIÓN: Se leen los datos desde la URL
             const urlParams = new URLSearchParams(window.location.search);
             const data = urlParams.get('data');
 
             if (!data) {
-                document.getElementById('vistaPublica').innerHTML = '<h1 class="text-3xl text-center">No se encontraron datos. Por favor, complete primero el cuestionario.</h1>';
+                // Se restaura el sessionStorage como respaldo si la URL falla
+                const sessionData = sessionStorage.getItem('dpvpResultados');
+                if (sessionData) {
+                    procesarDatos(JSON.parse(sessionData));
+                } else {
+                    document.getElementById('vistaPublica').innerHTML = '<h1 class="text-3xl text-center">No se encontraron datos. Por favor, complete primero el cuestionario.</h1>';
+                }
                 return;
             }
 
             try {
                 const datosCompletos = JSON.parse(atob(data));
-                const resultados = datosCompletos.resultados;
-
-                if (!resultados) { throw new Error("Resultados no encontrados."); }
-                
-                if (sessionStorage.getItem('terapeutaMode') === 'true') {
-                    mostrarVistaPrivada(datosCompletos);
-                } else {
-                    mostrarVistaPublica(resultados);
-                }
-
-                document.getElementById('loginTerapeuta').addEventListener('click', () => {
-                    const pass = prompt('Ingrese la contraseña de terapeuta:');
-                    if (pass === 'Ja#020904*DPvP') { 
-                        sessionStorage.setItem('terapeutaMode', 'true');
-                        mostrarVistaPrivada(datosCompletos);
-                    } else if (pass) {
-                        alert('Contraseña incorrecta.');
-                    }
-                });
-
+                procesarDatos(datosCompletos);
             } catch (e) {
-                console.error("Error al decodificar los datos:", e);
+                console.error("Error al procesar los datos:", e);
                 document.getElementById('vistaPublica').innerHTML = '<h1 class="text-3xl text-center">Error al procesar los resultados.</h1>';
             }
         });
+
+        function procesarDatos(datosCompletos) {
+            const resultados = datosCompletos.resultados;
+            const datosPareja = datosCompletos.demograficos;
+
+            if (!resultados) { throw new Error("Resultados no encontrados."); }
+            
+            if (sessionStorage.getItem('terapeutaMode') === 'true') {
+                mostrarVistaPrivada(datosCompletos);
+            } else {
+                mostrarVistaPublica(resultados, datosPareja);
+            }
+
+            document.getElementById('loginTerapeuta').addEventListener('click', () => {
+                const pass = prompt('Ingrese la contraseña de terapeuta:');
+                if (pass === 'Ja#020904*DPvP') { 
+                    sessionStorage.setItem('terapeutaMode', 'true');
+                    mostrarVistaPrivada(datosCompletos);
+                } else if (pass) {
+                    alert('Contraseña incorrecta.');
+                }
+            });
+        }
     </script>
 </body>
 </html>
