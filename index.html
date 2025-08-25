@@ -389,8 +389,8 @@
                 detalles: respuestas
             };
             
-            // CORRECCIÓN: Se pasan los datos a la URL para que la siguiente página los lea
-            const datosParaUrl = btoa(JSON.stringify(datosCompletos));
+            // CORRECCIÓN: Se guardan los datos en sessionStorage para que la siguiente página los lea
+            sessionStorage.setItem('dpvpResultados', JSON.stringify(datosCompletos));
 
             try {
                 const response = await fetch('/api/enviar-reporte', {
@@ -400,8 +400,7 @@
                 });
 
                 if (response.ok) {
-                    // Si el envío es exitoso, redirigir con los datos en la URL
-                    window.location.href = `rdpvp.html?data=${datosParaUrl}`;
+                    window.location.href = `rdpvp.html`;
                 } else {
                     const errorData = await response.json();
                     console.error('Error del servidor:', errorData);
@@ -420,3 +419,5 @@
     </script>
 </body>
 </html>
+
+
