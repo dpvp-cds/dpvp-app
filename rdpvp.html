@@ -181,7 +181,7 @@
                     let respuestaTexto = '';
                     if (typeof respuesta === 'object' && respuesta.respuesta === 'Solo Uno') {
                         const nombreQuien = respuesta.quien === 'Miembro 1' ? datosPareja.m1_nombre : datosPareja.m2_nombre;
-                        respuestaTexto = `<strong>Solo Uno</strong> (Seleccionado: ${nombreQuien})`;
+                        respuestaTexto = `<strong>Solo Uno</strong> (Seleccionado: ${nombreQuien || 'No especificado'})`;
                     } else {
                         respuestaTexto = `<strong>${respuesta}</strong>`;
                     }
@@ -230,23 +230,16 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // CORRECCIÓN: Se leen los datos desde la URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const data = urlParams.get('data');
+            // CORRECCIÓN: Se leen los datos desde sessionStorage
+            const sessionData = sessionStorage.getItem('dpvpResultados');
 
-            if (!data) {
-                // Se restaura el sessionStorage como respaldo si la URL falla
-                const sessionData = sessionStorage.getItem('dpvpResultados');
-                if (sessionData) {
-                    procesarDatos(JSON.parse(sessionData));
-                } else {
-                    document.getElementById('vistaPublica').innerHTML = '<h1 class="text-3xl text-center">No se encontraron datos. Por favor, complete primero el cuestionario.</h1>';
-                }
+            if (!sessionData) {
+                document.getElementById('vistaPublica').innerHTML = '<h1 class="text-3xl text-center">No se encontraron datos. Por favor, complete primero el cuestionario.</h1>';
                 return;
             }
 
             try {
-                const datosCompletos = JSON.parse(atob(data));
+                const datosCompletos = JSON.parse(sessionData);
                 procesarDatos(datosCompletos);
             } catch (e) {
                 console.error("Error al procesar los datos:", e);
