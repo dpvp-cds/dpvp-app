@@ -9,7 +9,7 @@
   "author": "Jorge Arango",
   "license": "ISC",
   "dependencies": {
-    "nodemailer": "^6.9.14",
-    "pdf-lib": "^1.17.1"
+    "pdf-lib": "^1.17.1",
+    "resend": "^3.4.0"
   }
 }
