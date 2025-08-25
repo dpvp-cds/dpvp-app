@@ -20,7 +20,7 @@ export default async function handler(request, response) {
 
     let y = height - 50;
 
-    // Función mejorada para añadir texto al PDF
+    // Función mejorada para añadir texto al PDF, con manejo de saltos de página
     function drawText(text, options = {}) {
         const lineHeight = (options.size || 11) + 5;
         if (y < 50 + lineHeight) { // Si no hay espacio, añade una nueva página
@@ -39,7 +39,7 @@ export default async function handler(request, response) {
         }
     }
     
-    // Contenido del PDF mejorado
+    // Contenido del PDF con formato profesional
     drawText('Reporte de Diagnóstico DPvP', { bold: true, size: 20 });
     y -= 20;
 
@@ -88,14 +88,11 @@ export default async function handler(request, response) {
         drawText(ambito, { bold: true, size: 12 });
         detalles[ambito].forEach((respuesta, index) => {
             let respuestaTexto = '';
-            // CORRECCIÓN: Se añade una verificación para asegurar que 'quien' existe
-            if (typeof respuesta === 'object' && respuesta.respuesta === 'Solo Uno' && respuesta.quien) {
+            // CORRECCIÓN DEFINITIVA: Asegura que el objeto 'quien' se lea correctamente
+            if (typeof respuesta === 'object' && respuesta !== null && respuesta.respuesta === 'Solo Uno') {
                 const nombreQuien = respuesta.quien === 'Miembro 1' ? demograficos.m1_nombre : demograficos.m2_nombre;
-                respuestaTexto = `Solo Uno (Seleccionado: ${nombreQuien})`;
-            } else if (typeof respuesta === 'object') {
-                respuestaTexto = respuesta.respuesta || 'No especificado';
-            }
-            else {
+                respuestaTexto = `Solo Uno (Seleccionado: ${nombreQuien || 'No especificado'})`;
+            } else {
                 respuestaTexto = respuesta;
             }
             drawText(`${ambitosTextos[ambito][index]}: ${respuestaTexto}`);
