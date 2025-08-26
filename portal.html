@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Reportes - DPvP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #F8F7F2; color: #6B6661; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: #070404; }
+        .card { background-color: white; border-radius: 16px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .report-item { transition: background-color 0.2s ease-in-out; }
+        .report-item:hover { background-color: #fafafa; }
+    </style>
+</head>
+<body>
+    <header class="bg-[#F8F7F2] py-4 px-8 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html"><img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto"></a>
+            <button id="logoutButton" class="text-sm font-semibold text-red-600 hover:underline">Cerrar Sesión</button>
+        </div>
+    </header>
+    <main class="container mx-auto px-6 py-12">
+        <h1 class="text-4xl font-bold mb-8">Portal de Reportes</h1>
+        <div id="loading" class="text-center py-10">Cargando reportes...</div>
+        <div id="reportList" class="card hidden">
+            <!-- Los reportes se insertarán aquí -->
+        </div>
+    </main>
+    <script>
+        // Protección de la página
+        if (sessionStorage.getItem('terapeutaAuth') !== 'true') {
+            window.location.href = './terapeuta-login.html';
+        }
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            sessionStorage.removeItem('terapeutaAuth');
+            window.location.href = './terapeuta-login.html';
+        });
+
+        async function fetchReportes() {
+            try {
+                const response = await fetch('/api/get-reportes');
+                if (!response.ok) throw new Error('Error al obtener los reportes');
+                const reportes = await response.json();
+                
+                const reportListDiv = document.getElementById('reportList');
+                const loadingDiv = document.getElementById('loading');
+                
+                if (reportes.length === 0) {
+                    loadingDiv.textContent = 'No se han encontrado reportes.';
+                    return;
+                }
+
+                let html = '<div class="divide-y divide-gray-200">';
+                reportes.forEach(reporte => {
+                    const fecha = new Date(reporte.fecha).toLocaleString('es-CO', { dateStyle: 'long', timeStyle: 'short' });
+                    html += `
+                        <a href="./reporte.html?id=${reporte.id}" class="report-item block p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold text-lg text-[#070404]">${reporte.demograficos.m1_nombre} y ${reporte.demograficos.m2_nombre}</p>
+                                    <p class="text-sm text-gray-500">Fecha: ${fecha}</p>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </div>
+                        </a>
+                    `;
+                });
+                html += '</div>';
+                
+                reportListDiv.innerHTML = html;
+                loadingDiv.classList.add('hidden');
+                reportListDiv.classList.remove('hidden');
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loading').textContent = 'Error al cargar los reportes.';
+            }
+        }
+
+        fetchReportes();
+    </script>
+</body>
+</html>

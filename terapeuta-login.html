@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Terapeuta - DPvP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #F8F7F2; color: #6B6661; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: #070404; }
+        .btn-brand { background-color: #E8A613; color: white; padding: 12px 30px; border-radius: 9999px; font-weight: 600; transition: background-color 0.3s ease; }
+        .btn-brand:hover { background-color: #d4940f; }
+        .input-styled { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 15px; width: 100%; }
+        .card { background-color: white; border-radius: 16px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="bg-[#F8F7F2] py-4 px-8 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html"><img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto"></a>
+        </div>
+    </header>
+    <main class="flex-grow container mx-auto px-6 py-12 md:py-20 flex items-center justify-center">
+        <div class="card max-w-md w-full">
+            <h1 class="text-3xl font-bold text-center mb-6">Acceso Terapeuta</h1>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="password" class="block mb-2 font-medium">Contraseña</label>
+                    <input type="password" id="password" class="input-styled" required>
+                </div>
+                <div id="errorMessage" class="text-red-600 text-center mb-4 hidden">Contraseña incorrecta.</div>
+                <button type="submit" class="btn-brand w-full">Ingresar</button>
+            </form>
+        </div>
+    </main>
+    <footer class="bg-[#070404] text-white py-12">
+        <div class="container mx-auto text-center"><p class="text-gray-400">&copy; 2025 Jorge Arango Castaño - Caminos del Ser.</p></div>
+    </footer>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            // Esta contraseña es solo para el acceso visual. La seguridad real está en las funciones del servidor.
+            if (password === 'Ja#020904*DPvP') { // Usa la misma contraseña que ya tienes
+                sessionStorage.setItem('terapeutaAuth', 'true');
+                window.location.href = 'portal.html';
+            } else {
+                errorMessage.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
