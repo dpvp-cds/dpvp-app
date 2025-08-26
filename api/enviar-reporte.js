@@ -1,17 +1,36 @@
-// Importa las herramientas necesarias
-const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
-const { Resend } = require('resend');
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { Resend } from 'resend';
 
-// Esta es la función principal que Vercel ejecutará
+// Inicializa Firebase Admin SDK
+// Esto asegura que la app se inicialice solo una vez
+if (!getApps().length) {
+  initializeApp({
+    credential: cert(JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON))
+  });
+}
+
+const db = getFirestore();
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export default async function handler(request, response) {
-    // 1. Inicializa Resend con tu API Key secreta
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
-    // 2. Recibir y procesar los datos enviados desde el formulario
     const data = request.body;
     const { demograficos, resultados, detalles } = data;
 
-    // 3. Crear un nuevo documento PDF
+    // Guardar en Firestore
+    try {
+        const docRef = await db.collection('reportes').add({
+            ...data,
+            fecha: new Date().toISOString() // Añade una marca de tiempo
+        });
+        console.log("Documento escrito con ID: ", docRef.id);
+    } catch (e) {
+        console.error("Error al añadir documento a Firestore: ", e);
+        // Opcional: podrías decidir si continuar o no si la base de datos falla
+    }
+
+    // Generar y enviar el PDF (el código del PDF no cambia)
     const pdfDoc = await PDFDocument.create();
     let page = pdfDoc.addPage();
     const { width, height } = page.getSize();
@@ -20,58 +39,72 @@ export default async function handler(request, response) {
 
     let y = height - 50;
 
-    // Función mejorada para añadir texto al PDF, con manejo de saltos de página
-    function drawText(text, options = {}) {
-        const lineHeight = (options.size || 11) + 5;
-        if (y < 50 + lineHeight) { // Si no hay espacio, añade una nueva página
-            page = pdfDoc.addPage();
-            y = height - 50;
+    async function drawText(text, options = {}) {
+        const size = options.size || 11;
+        const textFont = options.bold ? boldFont : font;
+        const maxWidth = width - 100;
+        const lineHeight = size + 5;
+
+        function wrapText(text) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = words[0] || '';
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const textWidth = textFont.widthOfTextAtSize(currentLine + " " + word, size);
+                if (textWidth < maxWidth) {
+                    currentLine += " " + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
         }
-        page.drawText(text, {
-            x: options.x || 50,
-            y: y,
-            font: options.bold ? boldFont : font,
-            size: options.size || 11,
-            color: options.color || rgb(0, 0, 0),
-        });
-        if (!options.noNewLine) {
+
+        const lines = wrapText(text);
+        for (const line of lines) {
+            if (y < 50 + lineHeight) {
+                page = pdfDoc.addPage();
+                y = height - 50;
+            }
+            page.drawText(line, { x: options.x || 50, y, font: textFont, size, color: options.color || rgb(0, 0, 0) });
             y -= lineHeight;
         }
     }
-    
-    // Contenido del PDF con formato profesional
-    drawText('Reporte de Diagnóstico DPvP', { bold: true, size: 20 });
-    y -= 20;
 
-    drawText('Datos Demográficos', { bold: true, size: 16 });
+    await drawText('Reporte de Diagnóstico DPvP', { bold: true, size: 20 });
+    y -= 20;
+    await drawText('Datos Demográficos', { bold: true, size: 16 });
     y -= 5;
-    drawText(`Miembro 1: ${demograficos.m1_nombre} (${demograficos.m1_edad} años)`);
-    drawText(`Ocupación: ${demograficos.m1_ocupacion}`);
+    await drawText(`Miembro 1: ${demograficos.m1_nombre} (${demograficos.m1_edad} años)`);
+    await drawText(`Ocupación: ${demograficos.m1_ocupacion}`);
     y -= 10;
-    drawText(`Miembro 2: ${demograficos.m2_nombre} (${demograficos.m2_edad} años)`);
-    drawText(`Ocupación: ${demograficos.m2_ocupacion}`);
+    await drawText(`Miembro 2: ${demograficos.m2_nombre} (${demograficos.m2_edad} años)`);
+    await drawText(`Ocupación: ${demograficos.m2_ocupacion}`);
     y -= 10;
     const unionMap = { solo_novios: 'Solo novios (sin convivir)', union_libre: 'Unión Libre', religion: 'Casados por religión', civil: 'Casados por lo civil' };
-    drawText(`Tiempo total de relación: ${demograficos.tiempo_relacion} años`);
+    await drawText(`Tiempo total de relación: ${demograficos.tiempo_relacion} años`);
     if(demograficos.tipo_union !== 'solo_novios') {
-      drawText(`Tiempo de convivencia: ${demograficos.tiempo_convivencia} años`);
+      await drawText(`Tiempo de convivencia: ${demograficos.tiempo_convivencia} años`);
     }
-    drawText(`Tipo de Unión: ${unionMap[demograficos.tipo_union]}`);
+    await drawText(`Tipo de Unión: ${unionMap[demograficos.tipo_union]}`);
     if (demograficos.anos_casados > 0) {
-        drawText(`Años de casados: ${demograficos.anos_casados}`);
+        await drawText(`Años de casados: ${demograficos.anos_casados}`);
     }
-    drawText(`Hijos: ${demograficos.num_hijos} | Mascotas: ${demograficos.num_mascotas}`);
+    await drawText(`Hijos: ${demograficos.num_hijos} | Mascotas: ${demograficos.num_mascotas}`);
     y -= 20;
-
-    drawText('Resultados Cuantitativos', { bold: true, size: 16 });
-     y -= 5;
+    await drawText('Resultados Cuantitativos', { bold: true, size: 16 });
+    y -= 5;
     for (const ambito in resultados) {
-        drawText(`${ambito}:`, { noNewLine: true });
-        drawText(`${resultados[ambito].toFixed(2)} / 10.00`, { x: 250 });
+        const puntajeTexto = `${resultados[ambito].toFixed(2)} / 10.00`;
+        page.drawText(`${ambito}:`, { x: 50, y, font: boldFont, size: 11 });
+        page.drawText(puntajeTexto, { x: 250, y, font, size: 11 });
+        y -= 16;
     }
     y -= 20;
-
-    drawText('Respuestas Detalladas', { bold: true, size: 16 });
+    await drawText('Respuestas Detalladas', { bold: true, size: 16 });
     const ambitosTextos = {
         "Ámbito Económico": ["1. ¿Ambos participan en la construcción del presupuesto familiar?", "2. ¿Ambos miembros aportan económicamente?", "3. ¿Ambos consideran que tienen un buen acuerdo en lo económico?", "4. ¿Ambos son sinceros con su pareja en el tema económico?"],
         "Ámbito Emocional": ["5. ¿Ambos consideran que hay adecuada comunicación en la pareja?", "6. ¿Ambos se respetan totalmente, sin presencia de algún tipo de maltrato?", "7. ¿Ambos sienten aún amor por su pareja?", "8. ¿Ambos están de acuerdo en todos los temas sexuales en la pareja?"],
@@ -82,26 +115,24 @@ export default async function handler(request, response) {
         "Ámbito Hogar": ["25. ¿Ambos participaron en la escogencia del lugar donde viven?", "26. ¿Ambos se sienten a gusto y felices en el lugar donde viven?", "27. ¿Ambos permitirían convivir con otras personas diferentes a la pareja e hijos?", "28. ¿Ambos realizan por igual o bajo un acuerdo las tareas del hogar?"],
         "Ámbito Espiritual": ["29. ¿Ambos miembros comparten la misma creencia religiosa/espiritual?", "30. ¿Ambos aceptan las creencias personales de la pareja?", "31. ¿Ambos miembros de la pareja son felices?", "32. ¿Ambos miembros desean continuar en su relación de pareja actual?"]
     };
-
     for (const ambito in detalles) {
         y -= 10;
-        drawText(ambito, { bold: true, size: 12 });
-        detalles[ambito].forEach((respuesta, index) => {
+        await drawText(ambito, { bold: true, size: 12 });
+        for (let index = 0; index < detalles[ambito].length; index++) {
+            const respuesta = detalles[ambito][index];
             let respuestaTexto = '';
-            // CORRECCIÓN DEFINITIVA: Asegura que el objeto 'quien' se lea correctamente
             if (typeof respuesta === 'object' && respuesta !== null && respuesta.respuesta === 'Solo Uno') {
                 const nombreQuien = respuesta.quien === 'Miembro 1' ? demograficos.m1_nombre : demograficos.m2_nombre;
                 respuestaTexto = `Solo Uno (Seleccionado: ${nombreQuien || 'No especificado'})`;
             } else {
                 respuestaTexto = respuesta;
             }
-            drawText(`${ambitosTextos[ambito][index]}: ${respuestaTexto}`);
-        });
+            const preguntaCompleta = `${ambitosTextos[ambito][index]}: ${respuestaTexto}`;
+            await drawText(preguntaCompleta);
+        }
     }
-
     const pdfBytes = await pdfDoc.save();
 
-    // 4. Enviar el correo usando Resend
     try {
         await resend.emails.send({
             from: 'Reportes DPvP <onboarding@resend.dev>',
@@ -113,9 +144,7 @@ export default async function handler(request, response) {
                 content: Buffer.from(pdfBytes),
             }],
         });
-
-        response.status(200).json({ message: 'Correo enviado con éxito' });
-
+        response.status(200).json({ message: 'Correo y guardado exitosos' });
     } catch (error) {
         console.error('Error al enviar el correo:', error);
         response.status(500).json({ error: 'Fallo al enviar el correo' });
