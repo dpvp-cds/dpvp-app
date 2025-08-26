@@ -2,31 +2,26 @@
 
 import admin from 'firebase-admin';
 
-// Esta es la lógica de inicialización robusta.
-// El bloque try...catch es la clave.
+// Este es el único lugar donde se inicializa Firebase.
+// Usamos un bloque try/catch para manejar el caso donde la función
+// se "calienta" en Vercel y ya está inicializada.
 try {
-  const serviceAccountString = Buffer.from(
-    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON,
-    'base64'
-  ).toString('utf-8');
-
-  const serviceAccount = JSON.parse(serviceAccountString);
-
-  // Intenta inicializar la aplicación.
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(
+      // Parseamos las credenciales directamente del string JSON,
+      // que es el formato correcto.
+      JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
+    ),
   });
   console.log('Firebase Admin SDK inicializado.');
-
 } catch (error) {
-  // Si la inicialización falla porque la app ya existe,
-  // simplemente ignoramos el error, porque significa que ya está lista para usar.
-  // Nos aseguramos de que no sea otro tipo de error.
+  // Si el error es porque la app ya existe, lo ignoramos.
+  // Es un comportamiento esperado en un entorno serverless.
+  // Si es cualquier otro error, lo mostramos en el log.
   if (!/already exists/i.test(error.message)) {
     console.error('Error de inicialización de Firebase:', error.stack);
   }
 }
 
-// Exportamos la instancia de la base de datos para que
-// todas las demás funciones puedan usarla sin problemas.
+// Exportamos la instancia de la base de datos ya lista para ser usada.
 export const db = admin.firestore();
