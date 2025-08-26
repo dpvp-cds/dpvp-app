@@ -1,9 +1,12 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { initializeApp, cert, getApps, getApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
+const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+
+// Inicialización robusta de Firebase
 if (!getApps().length) {
   initializeApp({
-    credential: cert(JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON))
+    credential: cert(serviceAccount)
   });
 }
 
