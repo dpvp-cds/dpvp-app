@@ -2,29 +2,31 @@
 
 import admin from 'firebase-admin';
 
-// Decodificamos las credenciales desde la variable de entorno de Vercel.
-// Usamos un Buffer para manejar correctamente el formato.
-const serviceAccountString = Buffer.from(
-    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON, 
+// Esta es la lógica de inicialización robusta.
+// El bloque try...catch es la clave.
+try {
+  const serviceAccountString = Buffer.from(
+    process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON,
     'base64'
-).toString('utf-8');
+  ).toString('utf-8');
 
-const serviceAccount = JSON.parse(serviceAccountString);
+  const serviceAccount = JSON.parse(serviceAccountString);
 
-// Esta es la lógica clave:
-// Verificamos si la app ya está inicializada. Si no, la inicializamos.
-// Esto evita errores de "doble inicialización" en el entorno de Vercel.
-if (!admin.apps.length) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    console.log('Firebase Admin SDK inicializado.');
-  } catch (error) {
-    console.error('Error al inicializar Firebase Admin SDK:', error);
+  // Intenta inicializar la aplicación.
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+  console.log('Firebase Admin SDK inicializado.');
+
+} catch (error) {
+  // Si la inicialización falla porque la app ya existe,
+  // simplemente ignoramos el error, porque significa que ya está lista para usar.
+  // Nos aseguramos de que no sea otro tipo de error.
+  if (!/already exists/i.test(error.message)) {
+    console.error('Error de inicialización de Firebase:', error.stack);
   }
 }
 
 // Exportamos la instancia de la base de datos para que
-// todas las demás funciones puedan usarla.
+// todas las demás funciones puedan usarla sin problemas.
 export const db = admin.firestore();
