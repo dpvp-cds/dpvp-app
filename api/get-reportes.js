@@ -1,5 +1,8 @@
 // api/get-reportes.js
+// Forzando la actualización - 5:55 PM
 
+import { db } from './lib/firebaseAdmin.js';
+// ... el resto del código sigue igual ...
 import { db } from './lib/firebaseAdmin.js';
 
 export default async function handler(request, response) {
@@ -31,3 +34,4 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: 'Error interno del servidor' });
   }
 }
+
