@@ -1,380 +1,420 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Escala DPvP - Diagnóstico en Proyecto de Vida en Pareja</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap"
-    rel="stylesheet"
-  />
-  <style>
-    body { font-family: 'Poppins', sans-serif; background:#f8f7f2; color:#6b6661; }
-    h1,h2,h3 { font-family: 'Playfair Display', serif; color:#070404; }
-    .btn-brand {
-      background-color:#e6a613;color:#fff;padding:12px 30px;border-radius:9999px;font-weight:600;transition:background-color 0.3s ease; cursor:pointer;
-    }
-    .btn-brand:hover:not(:disabled) { background-color:#d4940f; }
-    .btn-brand:disabled { background-color:#f3d68b; cursor:not-allowed; }
-    .input-styled {
-      border:1px solid #d1d5db;border-radius:8px;padding:10px 15px;width:100%;
-    }
-    .card {
-      background:#fff;border-radius:16px;padding:2rem;
-      box-shadow:0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.05);
-      margin-bottom:2rem;
-    }
-    .radio-option { display:inline-block;margin-right:1rem; }
-    .radio-option input[type="radio"] { display:none; }
-    .radio-option label {
-      display:inline-block;padding:0.5rem 1.25rem;border:2px solid #e5e7eb;border-radius:9999px;cursor:pointer;
-      transition:all 0.2s ease-in-out;
-    }
-    .radio-option input[type="radio"]:checked + label {
-      background:#e6a613;color:#fff;border-color:#e6a613;
-    }
-    .checkbox-label { cursor:pointer; }
-    .sub-question {
-      transition:all 0.3s ease;
-      max-height:0;overflow:hidden;
-    }
-    .sub-question.visible {
-      max-height:100px;margin-top:0.75rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala DPvP - Diagnóstico en Proyecto de Vida en Pareja</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F8F7F2;
+            color: #6B6661;
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: #070404;
+        }
+        .btn-brand {
+            background-color: #E8A613;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .btn-brand:hover {
+            background-color: #d4940f;
+        }
+        .btn-brand:disabled {
+            background-color: #f3d68b;
+            cursor: not-allowed;
+        }
+        .input-styled {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 10px 15px;
+            width: 100%;
+        }
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .radio-option {
+            display: inline-block;
+            margin-right: 1rem;
+        }
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+        .radio-option label {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .radio-option input[type="radio"]:checked + label {
+            background-color: #E8A613;
+            color: white;
+            border-color: #E8A613;
+        }
+        .checkbox-label {
+            cursor: pointer;
+        }
+        .sub-question {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .sub-question.visible {
+            max-height: 100px; /* Suficiente para el contenido */
+            margin-top: 0.75rem;
+        }
+    </style>
 </head>
-<body>
+<body class="antialiased">
 
-<header class="bg-[#f8f7f2] py-4 px-8 shadow-md sticky top-0 z-50">
-  <div class="container mx-auto flex justify-between items-center">
-    <a href="index.html"><img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto" /></a>
-    <nav class="hidden md:flex space-x-8">
-      <a href="https://www.caminosdelser.co/#about" class="text-[#6b6661] hover:text-[#e6a613]">Sobre Mí</a>
-      <a href="https://www.caminosdelser.co/#services" class="text-[#6b6661] hover:text-[#e6a613]">Servicios</a>
-      <a href="index.html" class="text-[#e6a613] font-semibold">Escala DPvP</a>
-      <a href="https://www.caminosdelser.co/#contact" class="text-[#6b6661] hover:text-[#e6a613]">Contacto</a>
-    </nav>
-    <button class="md:hidden text-3xl text-[#070404]">☰</button>
-  </div>
-</header>
-
-<main class="container mx-auto px-6 py-12">
-
-  <!-- Formulario datos iniciales -->
-  <section id="datosIniciales" class="card max-w-4xl mx-auto">
-    <form id="formularioDatos" novalidate>
-      <h1 class="text-4xl font-bold mb-6 text-center">Antecedentes de la pareja</h1>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-        <div>
-          <label for="m1_nombre" class="block font-semibold mb-1">Nombre completo Miembro 1</label>
-          <input id="m1_nombre" type="text" class="input-styled" required />
+    <header class="bg-[#F8F7F2] py-4 px-8 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html">
+                <img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto">
+            </a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="https://www.caminosdelser.co/#about" class="text-[#6B6661] hover:text-[#E8A613]">Sobre Mí</a>
+                <a href="https://www.caminosdelser.co/#services" class="text-[#6B6661] hover:text-[#E8A613]">Servicios</a>
+                <a href="index.html" class="text-[#E8A613] font-semibold">Escala DPvP</a>
+                <a href="https://www.caminosdelser.co/#contact" class="text-[#6B6661] hover:text-[#E8A613]">Contacto</a>
+            </nav>
+            <button class="md:hidden text-3xl text-[#070404]">&#9776;</button>
         </div>
-        <div>
-          <label for="m2_nombre" class="block font-semibold mb-1">Nombre completo Miembro 2</label>
-          <input id="m2_nombre" type="text" class="input-styled" required />
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-20">
+        
+        <section id="datosIniciales" class="card max-w-4xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold text-center mb-4">Escala DPvP</h1>
+            <h2 class="text-2xl text-center text-[#070404] mb-8">Diagnóstico en Proyecto de Vida en Pareja</h2>
+            <p class="text-center mb-10">
+                Este instrumento es un elemento de apoyo en la terapia de pareja. Por favor, respondan en conjunto y con total honestidad para obtener un diagnóstico asertivo que sirva como punto de partida en su proceso.
+            </p>
+            
+            <form id="formInicial" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <!-- Miembro 1 -->
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-[#070404]">Miembro 1</h3>
+                    <input type="text" id="miembro1_nombre" placeholder="Nombre Completo" class="input-styled mb-4" required>
+                    <input type="number" id="miembro1_edad" placeholder="Edad" class="input-styled mb-4" required>
+                    <input type="text" id="miembro1_ocupacion" placeholder="Profesión/Ocupación" class="input-styled" required>
+                </div>
+                <!-- Miembro 2 -->
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-[#070404]">Miembro 2</h3>
+                    <input type="text" id="miembro2_nombre" placeholder="Nombre Completo" class="input-styled mb-4" required>
+                    <input type="number" id="miembro2_edad" placeholder="Edad" class="input-styled mb-4" required>
+                    <input type="text" id="miembro2_ocupacion" placeholder="Profesión/Ocupación" class="input-styled" required>
+                </div>
+
+                <!-- Datos de la relación -->
+                <div class="md:col-span-2 border-t pt-6 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                    <div>
+                        <label for="tiempo_relacion" class="block mb-1 font-medium">Tiempo total de relación (años)</label>
+                        <input type="number" id="tiempo_relacion" placeholder="Incluyendo noviazgo" class="input-styled" required>
+                    </div>
+                    <div>
+                        <label for="tipo_union" class="block mb-1 font-medium">Tipo de Unión</label>
+                        <select id="tipo_union" class="input-styled" required>
+                            <option value="">Seleccione una opción</option>
+                            <option value="solo_novios">Solo novios (sin convivir)</option>
+                            <option value="union_libre">Unión Libre</option>
+                            <option value="religion">Casados por alguna religión</option>
+                            <option value="civil">Casados por lo civil</option>
+                        </select>
+                    </div>
+                    <div id="tiempo_convivencia_wrapper">
+                        <label for="tiempo_convivencia" class="block mb-1 font-medium">Años de convivencia</label>
+                        <input type="number" id="tiempo_convivencia" placeholder="Ej: 7" class="input-styled">
+                    </div>
+                    <div id="anos_casados_wrapper" class="hidden">
+                        <label for="anos_casados" class="block mb-1 font-medium">Años de casados</label>
+                        <input type="number" id="anos_casados" placeholder="Ej: 5" class="input-styled">
+                    </div>
+                </div>
+
+                <!-- Hijos y mascotas -->
+                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <input type="number" id="num_hijos" placeholder="N° de hijos" class="input-styled" required>
+                    <input type="number" id="num_mascotas" placeholder="N° de mascotas" class="input-styled" required>
+                </div>
+
+                <div class="md:col-span-2 text-center mt-6">
+                    <button type="submit" class="btn-brand">Comenzar Cuestionario</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="cuestionario" class="hidden card max-w-4xl mx-auto mt-12">
+            <h2 class="text-3xl font-bold text-center mb-8">Cuestionario DPvP</h2>
+            <form id="formCuestionario">
+                <div id="preguntasContainer"></div>
+                <div class="mt-10 pt-6 border-t border-gray-200">
+                    <label class="flex items-center justify-center checkbox-label">
+                        <input type="checkbox" id="sinceridadCheck" required class="h-4 w-4 text-[#E8A613] border-gray-300 rounded focus:ring-[#d4940f]">
+                        <span class="ml-3 text-center">
+                            Certificamos que ambos miembros de la pareja respondimos en conjunto y con total sinceridad las preguntas del cuestionario DPvP.
+                        </span>
+                    </label>
+                </div>
+                <div class="text-center mt-8">
+                    <button type="submit" id="submitButton" class="btn-brand">Finalizar y Enviar</button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#070404] text-white py-12">
+        <div class="container mx-auto text-center">
+            <p class="text-gray-400">&copy; 2025 Jorge Arango Castaño - Caminos del Ser. Todos los derechos reservados.</p>
         </div>
-        <div>
-          <label for="m1_edad" class="block font-semibold mb-1">Edad Miembro 1</label>
-          <input id="m1_edad" type="number" min="0" class="input-styled" required />
-        </div>
-        <div>
-          <label for="m2_edad" class="block font-semibold mb-1">Edad Miembro 2</label>
-          <input id="m2_edad" type="number" min="0" class="input-styled" required />
-        </div>
-        <div>
-          <label for="m1_ocupacion" class="block font-semibold mb-1">Profesión/Ocupación Miembro 1</label>
-          <input id="m1_ocupacion" type="text" class="input-styled" required />
-        </div>
-        <div>
-          <label for="m2_ocupacion" class="block font-semibold mb-1">Profesión/Ocupación Miembro 2</label>
-          <input id="m2_ocupacion" type="text" class="input-styled" required />
-        </div>
+    </footer>
 
-        <div>
-          <label for="tiempo_relacion" class="block font-semibold mb-1">Tiempo total relación (años)</label>
-          <input id="tiempo_relacion" type="number" min="0" class="input-styled" required />
-        </div>
-        <div>
-          <label for="tipo_union" class="block font-semibold mb-1">Tipo de unión</label>
-          <select id="tipo_union" class="input-styled" required>
-            <option value="">Seleccione una opción</option>
-            <option value="solo_novios">Solo novios (sin convivir)</option>
-            <option value="union_libre">Unión libre</option>
-            <option value="religion">Casados por religión</option>
-            <option value="civil">Casados civilmente</option>
-          </select>
-        </div>
-        <div id="tiempo_convivencia_wrapper">
-          <label for="tiempo_convivencia" class="block font-semibold mb-1">Años de convivencia</label>
-          <input id="tiempo_convivencia" type="number" min="0" class="input-styled" />
-        </div>
-        <div id="anos_casados_wrapper" style="display:none;">
-          <label for="anos_casados" class="block font-semibold mb-1">Años casados</label>
-          <input id="anos_casados" type="number" min="0" class="input-styled" />
-        </div>
-        <div>
-          <label for="num_hijos" class="block font-semibold mb-1">Número de hijos</label>
-          <input id="num_hijos" type="number" min="0" class="input-styled" required />
-        </div>
-        <div>
-          <label for="num_mascotas" class="block font-semibold mb-1">Número de mascotas</label>
-          <input id="num_mascotas" type="number" min="0" class="input-styled" required />
-        </div>
-      </div>
-
-      <div class="text-center">
-        <button type="submit" class="btn-brand">Comenzar cuestionario</button>
-      </div>
-    </form>
-  </section>
-
-  <!-- Cuestionario (oculto inicialmente) -->
-  <section id="cuestionario" class="card max-w-4xl mx-auto" style="display:none;">
-    <form id="formularioCuestionario">
-      <h1 class="text-3xl font-bold mb-6 text-center">Cuestionario DPvP</h1>
-      <div id="preguntas"></div>
-      <div class="mb-6">
-        <label>
-          <input type="checkbox" id="confirmacion" required />
-          Certificamos que respondimos con total sinceridad.
-        </label>
-      </div>
-      <div class="text-center">
-        <button type="submit" class="btn-brand" id="btnEnviarCuestionario">Finalizar y enviar</button>
-      </div>
-    </form>
-  </section>
-
-</main>
-
-<footer class="bg-[#070404] text-white py-6 mt-20 text-center">
-  <p>© 2025 Jorge Arango Castaño - Caminos del Ser. Todos los derechos reservados.</p>
-  <a href="terapeuta-login.html" class="underline text-gray-400">Acceso terapeuta</a>
-</footer>
-
-<script>
-  const tipoUnion = document.getElementById('tipo_union');
-  const tiempoConvivenciaWrapper = document.getElementById('tiempo_convivencia_wrapper');
-  const anosCasadosWrapper = document.getElementById('anos_casados_wrapper');
-  const tiempoConvivenciaInput = document.getElementById('tiempo_convivencia');
-  const anosCasadosInput = document.getElementById('anos_casados');
-
-  tipoUnion.addEventListener('change', () => {
-    if (tipoUnion.value === 'solo_novios') {
-      tiempoConvivenciaWrapper.style.display = 'none';
-      anosCasadosWrapper.style.display = 'none';
-      tiempoConvivenciaInput.required = false;
-      anosCasadosInput.required = false;
-    } else if (tipoUnion.value === 'religion' || tipoUnion.value === 'civil') {
-      tiempoConvivenciaWrapper.style.display = 'none';
-      anosCasadosWrapper.style.display = 'block';
-      tiempoConvivenciaInput.required = false;
-      anosCasadosInput.required = true;
-    } else {
-      tiempoConvivenciaWrapper.style.display = 'block';
-      anosCasadosWrapper.style.display = 'none';
-      tiempoConvivenciaInput.required = true;
-      anosCasadosInput.required = false;
-    }
-  });
-
-  // Ámbitos y preguntas
-  const ambitos = {
-    "Ámbito Económico": [
-      "¿Participan ambos en presupuesto familiar?",
-      "¿Aportan ambos económicamente?",
-      "¿Acuerdo en economía?",
-      "¿Sinceridad en tema económico?"
-    ],
-    "Ámbito Emocional": [
-      "¿Buena comunicación?",
-      "¿Ausencia de maltrato?",
-      "¿Todavía hay amor?",
-      "¿Acuerdo en temas sexuales?"
-    ],
-    "Ámbito Salud": [
-      "¿Están ambos sanos?",
-      "¿Cobertura médica?",
-      "¿Atención oportuna en salud?",
-      "¿Apoyo en situaciones de salud?"
-    ],
-    "Ámbito Laboral": [
-      "¿Realización profesional?",
-      "¿Trabajo remunerado?",
-      "¿Plan para vejez?",
-      "¿Apoyo laboral mutuo?"
-    ],
-    "Ámbito Ocio": [
-      "¿Gustos o hobbies comunes?",
-      "¿Espacios exclusivos para pareja?",
-      "¿Espacios personales?",
-      "¿Celebraciones y fechas importantes?"
-    ],
-    "Ámbito Hijos": [
-      "¿Acuerdan sobre hijos?",
-      "¿Número de hijos decidido?",
-      "¿Libertad respecto a hijos?",
-      "¿Acuerdo sobre mascotas?"
-    ],
-    "Ámbito Hogar": [
-      "¿Decisiones sobre lugar de vivienda?",
-      "¿Satisfacción con el lugar?",
-      "¿Aceptan convivir con otros?",
-      "¿Participan tareas hogareñas?"
-    ],
-    "Ámbito Espiritual": [
-      "¿Coinciden en creencias?",
-      "¿Aceptan diferencia en creencias?",
-      "¿Son felices en pareja?",
-      "¿Quieren continuar la relación?"
-    ]
-  };
-
-  // Referencias DOM
-  const formularioDatos = document.getElementById('formularioDatos');
-  const formularioCuestionario = document.getElementById('formularioCuestionario');
-  const seccionDatos = document.getElementById('datosIniciales');
-  const seccionCuestionario = document.getElementById('cuestionario');
-  const preguntasDiv = document.getElementById('preguntas');
-
-  // Envío datos iniciales
-  formularioDatos.addEventListener('submit', e => {
-    e.preventDefault();
-
-    const datosPareja = {
-      m1_nombre: document.getElementById('m1_nombre').value,
-      m1_edad: parseInt(document.getElementById('m1_edad').value, 10),
-      m1_ocupacion: document.getElementById('m1_ocupacion').value,
-      m2_nombre: document.getElementById('m2_nombre').value,
-      m2_edad: parseInt(document.getElementById('m2_edad').value, 10),
-      m2_ocupacion: document.getElementById('m2_ocupacion').value,
-      tiempo_relacion: parseInt(document.getElementById('tiempo_relacion').value, 10),
-      tipo_union: document.getElementById('tipo_union').value,
-      tiempo_convivencia: parseInt(document.getElementById('tiempo_convivencia').value || 0, 10),
-      anos_casados: parseInt(document.getElementById('anos_casados').value || 0, 10),
-      num_hijos: parseInt(document.getElementById('num_hijos').value, 10),
-      num_mascotas: parseInt(document.getElementById('num_mascotas').value, 10)
-    };
-
-    sessionStorage.setItem('datosPareja', JSON.stringify(datosPareja));
-
-    seccionDatos.style.display = 'none';
-    seccionCuestionario.style.display = 'block';
-    cargarPreguntas();
-    window.scrollTo({top: 0, behavior: 'smooth'});
-  });
-
-  function cargarPreguntas() {
-    preguntasDiv.innerHTML = '';
-    let i = 1;
-    for (const ambito in ambitos) {
-      const divAmbito = document.createElement('div');
-      divAmbito.className = 'mb-8';
-
-      const titulo = document.createElement('h3');
-      titulo.textContent = ambito;
-      titulo.className = 'text-xl font-semibold mb-3';
-      divAmbito.appendChild(titulo);
-
-      ambitos[ambito].forEach(pregunta => {
-        const divPregunta = document.createElement('div');
-        divPregunta.className = 'mb-3';
-
-        const label = document.createElement('label');
-        label.textContent = `${i}. ${pregunta}`;
-        label.className = 'block font-semibold mb-1';
-        divPregunta.appendChild(label);
-
-        ['Ambos', 'Solo Uno', 'Ninguno'].forEach(valor => {
-          const divOpcion = document.createElement('div');
-          divOpcion.className = 'inline-block mr-4';
-
-          const input = document.createElement('input');
-          input.type = 'radio';
-          input.name = `pregunta_${i}`;
-          input.id = `pregunta_${i}_${valor}`;
-          input.value = valor;
-          input.required = true;
-
-          const labelOpcion = document.createElement('label');
-          labelOpcion.htmlFor = input.id;
-          labelOpcion.textContent = valor;
-          labelOpcion.className = 'ml-1 cursor-pointer';
-
-          divOpcion.appendChild(input);
-          divOpcion.appendChild(labelOpcion);
-          divPregunta.appendChild(divOpcion);
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            sessionStorage.removeItem('terapeutaMode');
         });
 
-        divAmbito.appendChild(divPregunta);
-        i++;
-      });
+        const ambitos = {
+            "Ámbito Económico": ["¿Ambos participan en la construcción del presupuesto familiar?", "¿Ambos miembros aportan económicamente?", "¿Ambos consideran que tienen un buen acuerdo en lo económico?", "¿Ambos son sinceros con su pareja en el tema económico?"],
+            "Ámbito Emocional": ["¿Ambos consideran que hay adecuada comunicación en la pareja?", "¿Ambos se respetan totalmente, sin presencia de algún tipo de maltrato? (físico, verbal, etc.)", "¿Ambos sienten aún amor por su pareja?", "¿Ambos están de acuerdo en todos los temas sexuales en la pareja?"],
+            "Ámbito Salud": ["¿Ambos están sanos, sin ninguna enfermedad/discapacidad grave o importante?", "¿Ambos tienen cobertura de salud?", "¿Ambos atienden con celeridad cuando se presenta algún tema de salud?", "¿Ambos apoyan cualquier situación de salud que se presente en la familia?"],
+            "Ámbito Laboral": ["¿Ambos miembros se sienten realizados profesional/laboralmente?", "¿Ambos miembros tienen algún tipo de trabajo remunerado?", "¿Ambos han propuesto un plan de vida para la vejez?", "¿Ambos se sienten apoyados laboralmente por su pareja?"],
+            "Ámbito Ocio": ["¿Ambos reconocen gustos y hobbies en común?", "¿Ambos han creado/propuesto algún espacio exclusivo para compartir como pareja?", "¿Ambos miembros tienen espacios individuales para sí mismos?", "¿Ambos celebran y recuerdan fechas especiales como cumpleaños y aniversarios?"],
+            "Ámbito Hijos": ["¿Ambos hablaron con claridad el tema de los hijos antes de vivir en pareja?", "¿Ambos estuvieron o están de acuerdo en el número de hijos a tener?", "¿Ambos se sienten libres de presión por el tema de los hijos?", "¿Ambos están de acuerdo en el tema de mascotas en el hogar?"],
+            "Ámbito Hogar": ["¿Ambos participaron en la escogencia del lugar donde viven?", "¿Ambos se sienten a gusto y felices en el lugar donde viven?", "¿Ambos permitirían convivir con otras personas diferentes a la pareja e hijos?", "¿Ambos realizan por igual o bajo un acuerdo las tareas del hogar?"],
+            "Ámbito Espiritual": ["¿Ambos miembros comparten la misma creencia religiosa/espiritual?", "¿Ambos aceptan las creencias personales de la pareja?", "¿Ambos miembros de la pareja son felices?", "¿Ambos miembros desean continuar en su relación de pareja actual?"]
+        };
 
-      preguntasDiv.appendChild(divAmbito);
-    }
-  }
+        const formInicial = document.getElementById('formInicial');
+        const formCuestionario = document.getElementById('formCuestionario');
+        const seccionDatos = document.getElementById('datosIniciales');
+        const seccionCuestionario = document.getElementById('cuestionario');
+        const preguntasContainer = document.getElementById('preguntasContainer');
+        const tipoUnionSelect = document.getElementById('tipo_union');
+        const anosCasadosWrapper = document.getElementById('anos_casados_wrapper');
+        const anosCasadosInput = document.getElementById('anos_casados');
+        const tiempoConvivenciaWrapper = document.getElementById('tiempo_convivencia_wrapper');
+        const tiempoConvivenciaInput = document.getElementById('tiempo_convivencia');
+        const submitButton = document.getElementById('submitButton');
 
-  formularioCuestionario.addEventListener('submit', async e => {
-    e.preventDefault();
+        let datosPareja = {};
 
-    const boton = document.getElementById('btnEnviarCuestionario');
-    boton.disabled = true;
-    boton.textContent = 'Enviando...';
+        function renderizarPreguntas() {
+            let preguntaIndex = 1;
+            for (const ambito in ambitos) {
+                const ambitoDiv = document.createElement('div');
+                ambitoDiv.className = 'mb-10';
+                const ambitoTitle = document.createElement('h3');
+                ambitoTitle.className = 'text-2xl font-bold mb-6 border-b-2 border-[#E8A613] pb-2';
+                ambitoTitle.textContent = ambito;
+                ambitoDiv.appendChild(ambitoTitle);
 
-    const formData = new FormData(formularioCuestionario);
-    const respuestas = {};
-    let contador = 1;
+                ambitos[ambito].forEach(pregunta => {
+                    const preguntaWrapper = document.createElement('div');
+                    preguntaWrapper.className = 'mb-5';
+                    preguntaWrapper.id = `pregunta-wrapper-${preguntaIndex}`;
+                    
+                    const preguntaP = document.createElement('p');
+                    preguntaP.className = 'font-medium mb-3';
+                    preguntaP.textContent = `${preguntaIndex}. ${pregunta}`;
+                    preguntaWrapper.appendChild(preguntaP);
 
-    for (const ambito in ambitos) {
-      respuestas[ambito] = [];
-      ambitos[ambito].forEach(() => {
-        respuestas[ambito].push(formData.get(`pregunta_${contador}`));
-        contador++;
-      });
-    }
+                    const opcionesDiv = document.createElement('div');
+                    ['Ambos', 'Solo Uno', 'Ninguno'].forEach(opcion => {
+                        const opcionWrapper = document.createElement('div');
+                        opcionWrapper.className = 'radio-option';
+                        const radioInput = document.createElement('input');
+                        radioInput.type = 'radio';
+                        radioInput.id = `q${preguntaIndex}_${opcion}`;
+                        radioInput.name = `q${preguntaIndex}`;
+                        radioInput.value = opcion;
+                        radioInput.required = true;
+                        const radioLabel = document.createElement('label');
+                        radioLabel.htmlFor = `q${preguntaIndex}_${opcion}`;
+                        radioLabel.textContent = opcion;
+                        opcionWrapper.appendChild(radioInput);
+                        opcionWrapper.appendChild(radioLabel);
+                        opcionesDiv.appendChild(opcionWrapper);
+                    });
+                    preguntaWrapper.appendChild(opcionesDiv);
 
-    const puntos = { 'Ambos': 2.5, 'Solo Uno': 1.25, 'Ninguno': 0.25 };
-    const resultados = {};
-    for (const ambito in respuestas) {
-      resultados[ambito] = respuestas[ambito].reduce((acum, val) => acum + (puntos[val] || 0), 0);
-    }
+                    const subPreguntaDiv = document.createElement('div');
+                    subPreguntaDiv.className = 'sub-question pl-4';
+                    subPreguntaDiv.id = `sub-q-${preguntaIndex}`;
+                    subPreguntaDiv.innerHTML = `
+                        <p class="font-medium text-sm text-gray-600 mb-2">¿Quién fue?</p>
+                        <div class="flex items-center space-x-4">
+                            <div class="radio-option">
+                                <input type="radio" id="q${preguntaIndex}_quien_m1" name="q${preguntaIndex}_quien" value="Miembro 1">
+                                <label for="q${preguntaIndex}_quien_m1" class="text-sm !px-3 !py-1">${datosPareja.m1_nombre || 'Miembro 1'}</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="q${preguntaIndex}_quien_m2" name="q${preguntaIndex}_quien" value="Miembro 2">
+                                <label for="q${preguntaIndex}_quien_m2" class="text-sm !px-3 !py-1">${datosPareja.m2_nombre || 'Miembro 2'}</label>
+                            </div>
+                        </div>
+                    `;
+                    preguntaWrapper.appendChild(subPreguntaDiv);
+                    
+                    ambitoDiv.appendChild(preguntaWrapper);
+                    preguntaIndex++;
+                });
+                preguntasContainer.appendChild(ambitoDiv);
+            }
+        }
 
-    const datosPareja = JSON.parse(sessionStorage.getItem('datosPareja')) || {};
+        preguntasContainer.addEventListener('change', (e) => {
+            if (e.target.type === 'radio' && e.target.name.startsWith('q')) {
+                const preguntaIndex = e.target.name.replace('q', '');
+                const subPreguntaDiv = document.getElementById(`sub-q-${preguntaIndex}`);
+                const subRadios = subPreguntaDiv.querySelectorAll('input[type="radio"]');
+                
+                if (e.target.value === 'Solo Uno') {
+                    subPreguntaDiv.classList.add('visible');
+                    subRadios.forEach(radio => radio.required = true);
+                } else {
+                    subPreguntaDiv.classList.remove('visible');
+                    subRadios.forEach(radio => {
+                        radio.required = false;
+                        radio.checked = false;
+                    });
+                }
+            }
+        });
+        
+        tipoUnionSelect.addEventListener('change', (e) => {
+            const value = e.target.value;
 
-    const datosCompletos = {
-      demograficos: datosPareja,
-      resultados,
-      detalles: respuestas
-    };
+            if (value === 'religion' || value === 'civil') {
+                anosCasadosWrapper.classList.remove('hidden');
+                anosCasadosInput.required = true;
+            } else {
+                anosCasadosWrapper.classList.add('hidden');
+                anosCasadosInput.required = false;
+                anosCasadosInput.value = '';
+            }
 
-    sessionStorage.setItem('dpvpResultados', JSON.stringify(datosCompletos));
+            if (value === 'solo_novios') {
+                tiempoConvivenciaWrapper.classList.add('hidden');
+                tiempoConvivenciaInput.required = false;
+                tiempoConvivenciaInput.value = '';
+            } else {
+                tiempoConvivenciaWrapper.classList.remove('hidden');
+                tiempoConvivenciaInput.required = true;
+            }
+        });
 
-    try {
-      const res = await fetch('/api/enviar-reporte', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datosCompletos)
-      });
+        formInicial.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const numHijosInput = document.getElementById('num_hijos');
+            const numMascotasInput = document.getElementById('num_mascotas');
+            if (numHijosInput.value === '') numHijosInput.value = 0;
+            if (numMascotasInput.value === '') numMascotasInput.value = 0;
 
-      if (!res.ok) {
-        alert('Error al enviar datos al servidor.');
-        boton.disabled = false;
-        boton.textContent = 'Finalizar y enviar';
-        return;
-      }
+            datosPareja = {
+                m1_nombre: document.getElementById('miembro1_nombre').value,
+                m1_edad: document.getElementById('miembro1_edad').value,
+                m1_ocupacion: document.getElementById('miembro1_ocupacion').value,
+                m2_nombre: document.getElementById('miembro2_nombre').value,
+                m2_edad: document.getElementById('miembro2_edad').value,
+                m2_ocupacion: document.getElementById('miembro2_ocupacion').value,
+                tiempo_relacion: document.getElementById('tiempo_relacion').value,
+                tiempo_convivencia: tiempoConvivenciaInput.value || 0,
+                tipo_union: tipoUnionSelect.value,
+                anos_casados: anosCasadosInput.value || 0,
+                num_hijos: numHijosInput.value,
+                num_mascotas: numMascotasInput.value
+            };
+            
+            preguntasContainer.innerHTML = '';
+            renderizarPreguntas();
 
-      window.location.href = 'rdpv.html';
-    } catch (error) {
-      alert('Error en conexión. Intente nuevamente.');
-      boton.disabled = false;
-      boton.textContent = 'Finalizar y enviar';
-    }
-  });
-</script>
+            seccionDatos.classList.add('hidden');
+            seccionCuestionario.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
 
+        formCuestionario.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...';
+
+            const formData = new FormData(formCuestionario);
+            const respuestas = {};
+            let preguntaIndex = 1;
+
+            for (const ambito in ambitos) {
+                respuestas[ambito] = [];
+                ambitos[ambito].forEach(() => {
+                    const respuestaPrincipal = formData.get(`q${preguntaIndex}`);
+                    if (respuestaPrincipal === 'Solo Uno') {
+                        const quien = formData.get(`q${preguntaIndex}_quien`);
+                        respuestas[ambito].push({ respuesta: 'Solo Uno', quien: quien });
+                    } else {
+                        respuestas[ambito].push(respuestaPrincipal);
+                    }
+                    preguntaIndex++;
+                });
+            }
+            
+            const puntuaciones = { 'Ambos': 2.5, 'Solo Uno': 1.25, 'Ninguno': 0.25 };
+            const resultadosFinales = {};
+            for (const ambito in respuestas) {
+                resultadosFinales[ambito] = respuestas[ambito].reduce((acc, resp) => {
+                    const valor = typeof resp === 'object' ? resp.respuesta : resp;
+                    return acc + puntuaciones[valor];
+                }, 0);
+            }
+
+            const datosCompletos = {
+                demograficos: datosPareja,
+                resultados: resultadosFinales,
+                detalles: respuestas
+            };
+            
+            sessionStorage.setItem('dpvpResultados', JSON.stringify(datosCompletos));
+
+            try {
+                const response = await fetch('/api/enviar-reporte', {
+                    method: 'POST',
+                    body: JSON.stringify(datosCompletos),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    window.location.href = `rdpvp.html`;
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error del servidor:', errorData);
+                    alert('Hubo un error al enviar tus resultados. Por favor, intenta de nuevo.');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Finalizar y Enviar';
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+                alert('Hubo un error de conexión. Por favor, revisa tu conexión a internet e intenta de nuevo.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Finalizar y Enviar';
+            }
+        });
+
+    </script>
 </body>
 </html>
