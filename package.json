@@ -1,6 +1,7 @@
 {
   "name": "dpvp-functions",
   "version": "1.0.0",
+  "type": "module",
   "description": "Funciones para la app DPvP",
   "main": "index.js",
   "scripts": {
