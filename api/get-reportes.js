@@ -1,6 +1,6 @@
 // api/get-reportes.js
 
-import { db } from './lib/firebaseAdmin.js'; // Importamos nuestra conexión centralizada
+import { db } from './lib/firebaseAdmin.js';
 
 export default async function handler(request, response) {
   try {
@@ -13,10 +13,19 @@ export default async function handler(request, response) {
 
     const reportes = [];
     snapshot.forEach(doc => {
-      reportes.push({ id: doc.id, ...doc.data() });
+      const data = doc.data();
+      // Creamos el objeto explícitamente para asegurar que los campos viajen.
+      // Esta es la corrección clave.
+      reportes.push({
+        id: doc.id,
+        fecha: data.fecha,
+        nombre1: data.nombre1,
+        nombre2: data.nombre2
+      });
     });
 
     return response.status(200).json(reportes);
+    
   } catch (error) {
     console.error('Error al obtener los reportes:', error);
     return response.status(500).json({ error: 'Error interno del servidor' });
