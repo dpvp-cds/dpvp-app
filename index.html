@@ -12,20 +12,16 @@
     rel="stylesheet"
   />
   <style>
-    /* Tu CSS original aquí */
+    /* Incluye aquí tu CSS personalizado igual que antes */
     body {
-      font-family: "Poppins", sans-serif;
+      font-family: 'Poppins', sans-serif;
       background-color: #f8f7f2;
       color: #6b6661;
     }
-
-    h1,
-    h2,
-    h3 {
-      font-family: "Playfair Display", serif;
+    h1, h2, h3 {
+      font-family: 'Playfair Display', serif;
       color: #070404;
     }
-
     .btn-brand {
       background-color: #e8a613;
       color: white;
@@ -34,40 +30,32 @@
       font-weight: 600;
       transition: background-color 0.3s ease;
     }
-
     .btn-brand:hover {
-      background-color: #d4940f;
+      background-color: #d494f;
     }
-
     .btn-brand:disabled {
-      background-color: #f3d68b;
+      background-color: #f3d68d;
       cursor: not-allowed;
     }
-
     .input-styled {
       border: 1px solid #d1d5db;
       border-radius: 8px;
       padding: 10px 15px;
       width: 100%;
     }
-
     .card {
       background-color: white;
       border-radius: 16px;
       padding: 2rem;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05),
-        0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.05);
     }
-
     .radio-option {
       display: inline-block;
       margin-right: 1rem;
     }
-
-    .radio-option input[type="radio"] {
+    .radio-option input[type=radio] {
       display: none;
     }
-
     .radio-option label {
       display: inline-block;
       padding: 0.5rem 1.25rem;
@@ -76,23 +64,19 @@
       cursor: pointer;
       transition: all 0.2s ease-in-out;
     }
-
-    .radio-option input[type="radio"]:checked + label {
+    .radio-option input[type=radio]:checked + label {
       background-color: #e8a613;
       color: white;
       border-color: #e8a613;
     }
-
     .checkbox-label {
       cursor: pointer;
     }
-
     .sub-question {
-      transition: all 0.3s ease-in-out;
+      transition: all 0.3s ease;
       max-height: 0;
       overflow: hidden;
     }
-
     .sub-question.visible {
       max-height: 100px;
       margin-top: 0.75rem;
@@ -100,129 +84,156 @@
   </style>
 </head>
 <body class="antialiased">
-  <header class="bg-[#f8f7f2] py-4 px-8 shadow-md sticky top-0 z-50">
-    <div class="container mx-auto flex justify-between items-center">
-      <a href="index.html">
-        <img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto" />
-      </a>
-      <nav class="hidden md:flex space-x-8">
-        <a href="https://www.caminosdelser.co/#about" class="text-[#6b6661] hover:text-[#e8a613]">Sobre Mí</a>
-        <a href="https://www.caminosdelser.co/#services" class="text-[#6b6661] hover:text-[#e8a613]">Servicios</a>
-        <a href="index.html" class="text-[#e8a613] font-semibold">Escala DPvP</a>
-        <a href="https://www.caminosdelser.co/#contact" class="text-[#6b6661] hover:text-[#e8a613]">Contacto</a>
-      </nav>
-      <button class="md:hidden text-3xl text-[#070404]">☰</button>
-    </div>
-  </header>
 
-  <main class="container mx-auto px-6 py-12 md:py-20">
-    <section id="datosIniciales" class="card max-w-4xl mx-auto">
-      <h1 class="text-4xl md:text-5xl font-bold text-center mb-4">
-        Escala DPvP
-      </h1>
-      <h2 class="text-2xl text-center mb-8 text-[#070404]">
-        Diagnóstico en Proyecto de Vida en Pareja
-      </h2>
-      <p class="text-center mb-10">
-        Este instrumento es un elemento de apoyo en la terapia de pareja. Por favor, respondan en conjunto y con total
-        honestidad para obtener un diagnóstico asertivo que sirva de punto de partida en su proceso.
-      </p>
-      <form id="formularioDatos" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4" novalidate>
-        <!-- Miembro 1 -->
-        <div>
-          <h3 class="font-semibold text-xl mb-4 text-[#070404]">Miembro 1</h3>
-          <input id="m1_nombre" type="text" placeholder="Nombre Completo" class="input-styled mb-4" required />
-          <input id="m1_edad" type="number" placeholder="Edad" class="input-styled mb-4" required />
-          <input id="m1_ocupacion" type="text" placeholder="Profesión/Ocupación" class="input-styled" required />
-        </div>
+<header class="bg-[#f8f7f2] py-4 px-8 shadow-md sticky top-0 z-50">
+  <div class="container mx-auto flex justify-between items-center">
+    <a href="index.html"><img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto"></a>
+    <nav class="hidden md:flex space-x-8">
+      <a href="https://www.caminosdelser.co/#about" class="text-[#6b6661] hover:text-[#e8a613]">Sobre Mí</a>
+      <a href="https://www.caminosdelser.co/#services" class="text-[#6b6661] hover:text-[#e8a613]">Servicios</a>
+      <a href="index.html" class="text-[#e8a613] font-semibold">Escala DPvP</a>
+      <a href="https://www.caminosdelser.co/#contact" class="text-[#6b6661] hover:text-[#e8a613]">Contacto</a>
+    </nav>
+    <button class="md:hidden text-3xl text-[#070404]">☰</button>
+  </div>
+</header>
 
-        <!-- Miembro 2 -->
-        <div>
-          <h3 class="font-semibold text-xl mb-4 text-[#070404]">Miembro 2</h3>
-          <input id="m2_nombre" type="text" placeholder="Nombre Completo" class="input-styled mb-4" required />
-          <input id="m2_edad" type="number" placeholder="Edad" class="input-styled mb-4" required />
-          <input id="m2_ocupacion" type="text" placeholder="Profesión/Ocupación" class="input-styled" required />
-        </div>
+<main class="container mx-auto px-6 py-12">
 
-        <!-- Datos de la relación -->
-        <div class="md:col-span-2 border-t pt-6 mt-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label for="tiempo_relacion" class="block font-medium mb-1">Tiempo total de relación</label>
-            <input id="tiempo_relacion" type="number" placeholder="Incluyendo noviazgo" class="input-styled" required />
-          </div>
-          <div>
-            <label for="tipo_union" class="block font-medium mb-1">Tipo de Unión</label>
-            <select id="tipo_union" class="input-styled" required>
-              <option value="">Seleccione una opción</option>
-              <option value="solo_novios">Solo novios (sin convivir)</option>
-              <option value="union_libre">Unión Libre</option>
-              <option value="religion">Casados por alguna religión</option>
-              <option value="civil">Casados por lo civil</option>
-            </select>
-          </div>
-          <div id="tiempo_convivencia_wrapper">
-            <label for="tiempo_convivencia" class="block font-medium mb-1">Años de convivencia</label>
-            <input id="tiempo_convivencia" type="number" placeholder="Ej: 7" class="input-styled" />
-          </div>
-          <div id="anos_casados_wrapper" class="hidden">
-            <label for="anos_casados" class="block font-medium mb-1">Años de casados</label>
-            <input id="anos_casados" type="number" placeholder="Ej: 5" class="input-styled" />
-          </div>
-        </div>
+  <!-- Sección inicial -->
+  <section id="datosIniciales" class="card max-w-4xl mx-auto">
+    <h1 class="text-4xl md:text-5xl font-bold text-center mb-4">Escala DPvP</h1>
+    <h2 class="text-2xl text-center mb-8 text-[#070404]">Diagnóstico en Proyecto de Vida en Pareja</h2>
+    <p class="text-center mb-10">
+      Este instrumento es un elemento de apoyo en la terapia de pareja. Por favor, respondan en conjunto y con total honestidad para obtener un diagnóstico asertivo que sirva de punto de partida en su proceso.
+    </p>
+    <form id="formularioDatos" class="grid grid-cols-1 md:grid-cols-2 gap-6" novalidate>
+      <!-- Miembro 1 -->
+      <div>
+        <h3 class="font-semibold text-xl mb-4 text-[#070404]">Miembro 1</h3>
+        <input id="m1_nombre" type="text" required placeholder="Nombre Completo" class="input-styled mb-4" />
+        <input id="m1_edad" type="number" required placeholder="Edad" class="input-styled mb-4" />
+        <input id="m1_ocupacion" type="text" required placeholder="Profesión/Ocupación" class="input-styled" />
+      </div>
+      <!-- Miembro 2 -->
+      <div>
+        <h3 class="font-semibold text-xl mb-4 text-[#070404]">Miembro 2</h3>
+        <input id="m2_nombre" type="text" required placeholder="Nombre Completo" class="input-styled mb-4" />
+        <input id="m2_edad" type="number" required placeholder="Edad" class="input-styled mb-4" />
+        <input id="m2_ocupacion" type="text" required placeholder="Profesión/Ocupación" class="input-styled" />
+      </div>
+      <!-- Datos de relación -->
+      <div>
+        <label for="tiempo_relacion" class="font-medium block mb-1">Tiempo total de relación (años)</label>
+        <input id="tiempo_relacion" type="number" required placeholder="Incluyendo noviazgo" class="input-styled" />
+      </div>
+      <div>
+        <label for="tipo_union" class="font-medium block mb-1">Tipo de Unión</label>
+        <select id="tipo_union" required class="input-styled">
+          <option value="">Seleccione una opción</option>
+          <option value="solo_novios">Solo novios (sin convivir)</option>
+          <option value="union_libre">Unión Libre</option>
+          <option value="religion">Casados por religión</option>
+          <option value="civil">Casados civilmente</option>
+        </select>
+      </div>
+      <div id="tiempo_convivencia_wrapper">
+        <label for="tiempo_convivencia" class="font-medium block mb-1">Años de convivencia</label>
+        <input id="tiempo_convivencia" type="number" placeholder="Ej: 7" class="input-styled" />
+      </div>
+      <div id="anos_casados_wrapper" class="hidden">
+        <label for="anos_casados" class="font-medium block mb-1">Años de casados</label>
+        <input id="anos_casados" type="number" placeholder="Ej: 5" class="input-styled" />
+      </div>
+      <div>
+        <label for="num_hijos" class="font-medium block mb-1">Número de hijos</label>
+        <input id="num_hijos" type="number" required placeholder="Ej: 2" class="input-styled" />
+      </div>
+      <div>
+        <label for="num_mascotas" class="font-medium block mb-1">Número de mascotas</label>
+        <input id="num_mascotas" type="number" required placeholder="Ej: 1" class="input-styled" />
+      </div>
+      <div class="md:col-span-2 text-center mt-6">
+        <button type="submit" id="btnEnviarDatos" class="btn-brand">Comenzar cuestionario</button>
+      </div>
+    </form>
+  </section>
 
-        <!-- Hijos y mascotas -->
-        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <input id="num_hijos" type="number" placeholder="N° Hijos" class="input-styled" required />
-          <input id="num_mascotas" type="number" placeholder="N° Mascotas" class="input-styled" required />
-        </div>
+  <!-- Sección cuestionario, inicialmente oculta -->
+  <section id="cuestionario" class="card max-w-4xl mx-auto mt-12" style="display:none;">
+    <h2 class="text-3xl font-bold text-center mb-8">Cuestionario DPvP</h2>
+    <form id="formCuestionario">
+      <div id="preguntasContainer"></div>
+      <div class="mt-8">
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="sinceridadCheck" required class="mr-2" />
+          Certificamos que respondimos todas las preguntas con sinceridad.
+        </label>
+      </div>
+      <div class="text-center mt-8">
+        <button type="submit" id="btnEnviarCuestionario" class="btn-brand">Finalizar y enviar</button>
+      </div>
+    </form>
+  </section>
 
-        <div class="md:col-span-2 text-center mt-6">
-          <button id="btnEnviarDatos" type="submit" class="btn-brand">Comenzar cuestionario</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- Aquí incluirías la sección de cuestionario, etc... según implementación -->
-  </main>
-
-  <footer class="bg-[#070404] text-white py-12">
+  <footer class="bg-[#070404] text-white py-12 mt-20">
     <div class="container mx-auto text-center">
-      <p class="text-gray-400">
-        © 2025 Jorge Arango Castaño - Caminos del Ser. Todos los derechos reservados.
-      </p>
-      <a href="terapeuta-login.html" class="text-sm text-gray-500 hover:text-white">Acceso Terapeuta</a>
+      <p class="text-gray-400">© 2025 Jorge Arango Castaño - Caminos del Ser. Todos los derechos reservados.</p>
+      <a href="terapeuta-login.html" class="text-sm text-gray-400 underline">Acceso Terapeuta</a>
     </div>
   </footer>
 
   <script>
-    document.getElementById("formularioDatos").addEventListener("submit", function (e) {
-      e.preventDefault();
+    // Manejo dependencias y estado básicos
+    const ambitos = {
+      "Ámbito Económico": [
+        "¿Participan ambos en presupuesto familiar?",
+        "¿Ambos aportan económicamente?",
+        "¿Acuerdo en aspecto económico?",
+        "¿Sinceridad en aspecto económico?"
+      ],
+      "Ámbito Emocional": [
+        "¿Buena comunicación?",
+        "¿Ausencia de maltrato?",
+        "¿Todavía hay amor?",
+        "¿Acuerdo en temas sexuales?"
+      ],
+      "Ámbito Salud": [
+        "¿Están sanos?",
+        "¿Cobertura médica?",
+        "¿Atención en temas de salud?",
+        "¿Apoyo a situaciones de salud?"
+      ],
+      "Ámbito Laboral": [
+        "¿Realización profesional?",
+        "¿Labor remunerada?",
+        "¿Plan para la vejez?",
+        "¿Apoyo laboral mutuo?"
+      ],
+      "Ámbito Ocio": [
+        "¿Gustos o hobbies en común?",
+        "¿Espacios exclusivos para pareja?",
+        "¿Espacios individuales?",
+        "¿Celebran fechas importantes?"
+      ],
+      "Ámbito Hijos": [
+        "¿Acuerdo sobre hijos?",
+        "¿Número de hijos acordado?",
+        "¿Libertad respecto a hijos?",
+        "¿Acuerdo sobre mascotas?"
+      ],
+      "Ámbito Hogar": [
+        "¿Decisiones sobre lugar de vivienda?",
+        "¿Satisfacción con el lugar?",
+        "¿Aceptan convivir con otros?",
+        "¿Participación en tareas hogareñas?"
+      ],
+      "Ámbito Espiritual": [
+        "¿Coinciden creencias?",
+        "¿Aceptan creencias personales?",
+        "¿Felicidad en pareja?",
+        "¿Desean continuar juntos?"
+      ]
+    };
 
-      // Construir objeto con datos básicos de la pareja
-      const datosPareja = {
-        m1_nombre: document.getElementById("m1_nombre").value,
-        m1_edad: parseInt(document.getElementById("m1_edad").value, 10),
-        m1_ocupacion: document.getElementById("m1_ocupacion").value,
-        m2_nombre: document.getElementById("m2_nombre").value,
-        m2_edad: parseInt(document.getElementById("m2_edad").value, 10),
-        m2_ocupacion: document.getElementById("m2_ocupacion").value,
-        tiempo_relacion: parseInt(document.getElementById("tiempo_relacion").value, 10),
-        tipo_union: document.getElementById("tipo_union").value,
-        tiempo_convivencia: parseInt(document.getElementById("tiempo_convivencia").value || 0, 10),
-        anos_casados: parseInt(document.getElementById("anos_casados").value || 0, 10),
-        num_hijos: parseInt(document.getElementById("num_hijos").value || 0, 10),
-        num_mascotas: parseInt(document.getElementById("num_mascotas").value || 0, 10),
-      };
-
-      // Se guardan sólo los datos demográficos inicialmente
-      sessionStorage.setItem("datosPareja", JSON.stringify(datosPareja));
-
-      // Aquí puedes añadir la lógica para mostrar el cuestionario y seguir el flujo
-
-      alert("Datos guardados. Ahora sigue con el cuestionario.");
-
-      // Opcional: cambiar de sección mostrando el cuestionario activo (según tu implementación)
-    });
-  </script>
-</body>
-</html>
+    const datosInicialesSection = document
