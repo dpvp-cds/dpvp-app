@@ -1,37 +1,29 @@
-// api/get-reportes.js
-// Forzando la actualización - 5:55 PM
+// api/get-reporte.js
 
-import { db } from './lib/firebaseAdmin.js';
-// ... el resto del código sigue igual ...
-import { db } from './lib/firebaseAdmin.js';
+import { db } from './lib/firebaseAdmin.js'; // Importamos nuestra conexión centralizada
 
 export default async function handler(request, response) {
-  try {
-    const reportsRef = db.collection('reportes');
-    const snapshot = await reportsRef.orderBy('fecha', 'desc').get();
+  if (request.method !== 'GET') {
+    return response.status(405).json({ error: 'Método no permitido' });
+  }
 
-    if (snapshot.empty) {
-      return response.status(200).json([]);
+  const { id } = request.query;
+
+  if (!id) {
+    return response.status(400).json({ error: 'Falta el ID del reporte' });
+  }
+
+  try {
+    const reportRef = db.collection('reportes').doc(id);
+    const doc = await reportRef.get();
+
+    if (!doc.exists) {
+      return response.status(404).json({ error: 'Reporte no encontrado' });
     }
 
-    const reportes = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      // Creamos el objeto explícitamente para asegurar que los campos viajen.
-      // Esta es la corrección clave.
-      reportes.push({
-        id: doc.id,
-        fecha: data.fecha,
-        nombre1: data.nombre1,
-        nombre2: data.nombre2
-      });
-    });
-
-    return response.status(200).json(reportes);
-    
+    return response.status(200).json({ id: doc.id, ...doc.data() });
   } catch (error) {
-    console.error('Error al obtener los reportes:', error);
-    return response.status(500).json({ error: 'Error interno del servidor' });
+    console.error('Error al obtener el reporte:', error);
+    return response.status(500).json({ error: 'No se pudo obtener el reporte' });
   }
 }
-
