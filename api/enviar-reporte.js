@@ -144,10 +144,9 @@ export default async function handler(request, response) {
                 content: Buffer.from(pdfBytes),
             }],
         });
-        response.status(200).json({ message: 'Correo y guardado exitosos' });
-    } catch (error) {
-        console.error('Error al enviar el correo:', error);
-        response.status(500).json({ error: 'Fallo al enviar el correo' });
-    }
-}
-
+        response.status(200).json({
+  message: 'Correo y guardado exitosos',
+  demograficos,
+  resultados,
+  detalles
+});
