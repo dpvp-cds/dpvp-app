@@ -1,5 +1,8 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { Resend } from "resend"; // <-- ESTA LÍNEA ES CLAVE
+
 
 // Inicializa Firebase Admin SDK solo si no se ha inicializado antes
 if (!getApps().length) {
@@ -147,3 +150,4 @@ export default async function handler(request, response) {
         response.status(500).json({ error: 'Fallo al enviar el correo' });
     }
 }
+
