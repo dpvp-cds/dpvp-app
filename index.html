@@ -185,29 +185,75 @@
          <a href="terapeuta-login.html" class="underline text-gray-400">Acceso terapeuta</a>
         </div>
        </footer>
-  <!-- Cookie Banner -->
-    <div id="cookieBanner" class="cookie-banner">
-        <p>Este sitio web utiliza cookies para mejorar tu experiencia. Al continuar navegando, aceptas el uso de estas cookies. Para más información, consulta nuestra <a href="politicadatos.html" class="text-[#00B4D8] hover:underline font-semibold">Política de Protección de Datos</a>.</p>
-        <button id="acceptCookies">Aceptar Cookies</button>
-    </div>
+  <div id="cookieBanner" class="cookie-banner">
+    <p>Este sitio web utiliza cookies para mejorar tu experiencia. Al continuar navegando, aceptas su uso. Para más información, consulta nuestra <a href="politicadatos.html" class="cookie-link">Política de Protección de Datos</a>.</p>
+    <button id="acceptCookies" class="cookie-button">Aceptar</button>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const cookieBanner = document.getElementById('cookieBanner');
-            const acceptCookiesBtn = document.getElementById('acceptCookies');
+<style>
+    .cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #2c3e50; /* Un fondo oscuro y profesional */
+        color: #ecf0f1; /* Texto claro para contraste */
+        padding: 15px 30px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+    }
+    .cookie-banner p {
+        margin: 0;
+        padding-right: 20px;
+    }
+    .cookie-link {
+        color: #3498db; /* Un azul que resalta */
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .cookie-link:hover {
+        text-decoration: underline;
+    }
+    .cookie-button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        white-space: nowrap; /* Evita que el texto del botón se parta */
+    }
+    .cookie-button:hover {
+        background-color: #2980b9;
+    }
+    /* Clase para ocultar el banner, usada por el script */
+    .cookie-banner.hidden {
+        display: none;
+    }
+</style>
 
-            // Check if user has already accepted cookies
-            if (localStorage.getItem('cookiesAccepted') === 'true') {
-                cookieBanner.classList.add('hidden');
-            }
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cookieBanner = document.getElementById('cookieBanner');
+        const acceptCookiesBtn = document.getElementById('acceptCookies');
 
-            // Handle accept button click
-            acceptCookiesBtn.addEventListener('click', function() {
-                localStorage.setItem('cookiesAccepted', 'true');
-                cookieBanner.classList.add('hidden');
-            });
+        // Revisa si el usuario ya ha aceptado las cookies
+        if (localStorage.getItem('cookiesAccepted') === 'true') {
+            cookieBanner.classList.add('hidden');
+        }
+
+        // Maneja el clic en el botón de aceptar
+        acceptCookiesBtn.addEventListener('click', function() {
+            localStorage.setItem('cookiesAccepted', 'true');
+            cookieBanner.classList.add('hidden');
         });
-    </script>
+    });
+</script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             sessionStorage.removeItem('terapeutaMode');
@@ -441,6 +487,7 @@
     </script>
 </body>
 </html>
+
 
 
 
