@@ -171,18 +171,28 @@
             <h2 class="text-3xl font-bold text-center mb-8">Cuestionario DPvP</h2>
             <form id="formCuestionario">
                 <div id="preguntasContainer"></div>
-                <div class="mt-10 pt-6 border-t border-gray-200">
+                
+                <div class="mt-10 pt-6 border-t border-gray-200 space-y-4">
+                    <!-- Sincerity Checkbox -->
                     <label class="flex items-center justify-center checkbox-label">
                         <input type="checkbox" id="sinceridadCheck" required class="h-4 w-4 text-[#E8A613] border-gray-300 rounded focus:ring-[#d4940f]">
                         <span class="ml-3 text-center">
                             Certificamos que ambos miembros de la pareja respondimos en conjunto y con total sinceridad las preguntas del cuestionario DPvP.
                         </span>
                     </label>
+                    
+                    <!-- Data Policy Checkbox -->
+                    <label class="flex items-center justify-center checkbox-label">
+                        <input type="checkbox" id="politicaDatosCheck" required class="h-4 w-4 text-[#E8A613] border-gray-300 rounded focus:ring-[#d4940f]">
+                        <span class="ml-3 text-center">
+                            Acepto la <a href="https://caminosdelser.co/politicadatos.html" target="_blank" rel="noopener noreferrer" class="underline text-[#E8A613] hover:text-[#d4940f]">política de tratamiento de datos de CAMINOS DEL SER.</a>
+                        </span>
+                    </label>
                 </div>
                 
-                <!-- hCaptcha se movió aquí -->
+                <!-- hCaptcha -->
                 <div class="flex justify-center mt-8">
-                    <div class="h-captcha" data-sitekey="a974e31c-86e4-4900-97f4-0f80d29c8b7c"></div>
+                    <div class="h-captcha" data-sitekey="PEGA_AQUÍ_TU_SITEKEY_PÚBLICA"></div>
                 </div>
 
                 <div class="text-center mt-6">
@@ -344,8 +354,6 @@
         formInicial.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            // La validación de captcha se eliminó de aquí.
-
             const numHijosInput = document.getElementById('num_hijos');
             const numMascotasInput = document.getElementById('num_mascotas');
             if (numHijosInput.value === '') numHijosInput.value = 0;
@@ -379,7 +387,6 @@
             submitButton.disabled = true;
             submitButton.textContent = 'Enviando...';
 
-            // Verificación del captcha movida a este formulario
             const hcaptchaToken = document.querySelector('#formCuestionario [name=h-captcha-response]').value;
             if (!hcaptchaToken) {
                 alert('Por favor, completa el captcha para finalizar.');
