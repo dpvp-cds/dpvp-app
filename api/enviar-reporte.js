@@ -2,68 +2,48 @@ import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { Resend } from "resend";
-import axios from 'axios';
 
-// --- INICIALIZACIÓN DE SERVICIOS (MÁS ROBUSTA) ---
+// --- INICIALIZACIÓN DE SERVICIOS ---
 let db;
 let resend;
+let servicesInitialized = false;
 
 try {
-  // Inicializa Firebase Admin SDK solo si no se ha inicializado antes
-  if (!getApps().length) {
-    const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
-    initializeApp({
-      credential: cert(credentials)
-    });
-    console.log("Firebase Admin inicializado correctamente.");
+  // Verificamos si las credenciales existen antes de intentar parsear
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+    if (!getApps().length) {
+      const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+      initializeApp({
+        credential: cert(credentials)
+      });
+    }
+    db = getFirestore();
+    resend = new Resend(process.env.RESEND_API_KEY);
+    servicesInitialized = true;
+  } else {
+    console.error("ERROR CRÍTICO: La variable GOOGLE_APPLICATION_CREDENTIALS_JSON no está definida.");
   }
-  db = getFirestore();
-  resend = new Resend(process.env.RESEND_API_KEY);
 } catch (e) {
   console.error("ERROR CRÍTICO: Fallo al inicializar los servicios de backend.", e);
-  // Este error es fatal. Si los servicios no se inician, la función no puede operar.
 }
 
 // --- FUNCIÓN PRINCIPAL DEL HANDLER ---
 export default async function handler(request, response) {
-  
-  // Verificamos si la inicialización falló
-  if (!db || !resend) {
-    return response.status(500).json({ message: "Error interno del servidor: los servicios no pudieron iniciarse." });
+
+  if (!servicesInitialized) {
+    console.error("La función se detuvo porque los servicios no se inicializaron.");
+    return response.status(500).json({ message: "Error interno del servidor: Fallo en la configuración." });
   }
 
-  // 1. --- VERIFICACIÓN DE HCAPTCHA CON AXIOS ---
-  const { hcaptchaToken, ...data } = request.body;
-  const secretKey = process.env.HCAPTCHA_SECRET_KEY;
-
-  if (!hcaptchaToken) {
-    return response.status(400).json({ message: "El token de hCaptcha es requerido." });
-  }
-
-  try {
-    const params = new URLSearchParams();
-    params.append('response', hcaptchaToken);
-    params.append('secret', secretKey);
-
-    const hcaptchaResponse = await axios.post('https://api.hcaptcha.com/siteverify', params, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    });
-
-    if (!hcaptchaResponse.data.success) {
-      console.error("Fallo en la verificación de hCaptcha:", hcaptchaResponse.data['error-codes']);
-      return response.status(403).json({ message: "La verificación de hCaptcha falló." });
-    }
-
-    console.log("hCaptcha verificado exitosamente. Procesando reporte...");
-
-  } catch (error) {
-    console.error("Error al contactar el servidor de hCaptcha:", error);
-    return response.status(500).json({ message: "No se pudo verificar el captcha. Intente de nuevo." });
-  }
-
-  // 2. --- LÓGICA EXISTENTE (GUARDAR, PDF, EMAIL) ---
+  // Ya no hay verificación de captcha aquí, recibimos los datos directamente
+  const data = request.body;
   const { demograficos, resultados, detalles } = data;
 
+  if (!demograficos || !resultados || !detalles) {
+      return response.status(400).json({ message: "Faltan datos en la solicitud." });
+  }
+
+  // --- LÓGICA EXISTENTE (GUARDAR, PDF, EMAIL) ---
   try {
     const docRef = await db.collection("reportes").add({
       ...data,
