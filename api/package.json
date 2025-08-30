@@ -1,0 +1,17 @@
+{
+  "name": "dpvp-functions",
+  "version": "1.0.0",
+  "description": "Funciones para la app DPvP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jorge Arango",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "firebase-admin": "^12.1.1",
+    "pdf-lib": "^1.17.1",
+    "resend": "^3.4.0"
+  }
+}
