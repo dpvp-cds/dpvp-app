@@ -90,17 +90,20 @@
 <body class="antialiased">
 
     <header class="bg-[#F8F7F2] py-4 px-8 shadow-md sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
+        <div class="container mx-auto flex justify-between items-center flex-wrap">
             <a href="index.html">
                 <img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto">
             </a>
-            <nav class="hidden md:flex space-x-8">
-                <a href="https://www.caminosdelser.co/#about" class="text-[#6B6661] hover:text-[#E8A613]">Sobre Mí</a>
-                <a href="https://www.caminosdelser.co/#services" class="text-[#6B6661] hover:text-[#E8A613]">Servicios</a>
-                <a href="index.html" class="text-[#E8A613] font-semibold">Escala DPvP</a>
-                <a href="https://www.caminosdelser.co/#contact" class="text-[#6B6661] hover:text-[#E8A613]">Contacto</a>
+            <!-- Botón del menú móvil -->
+            <button id="mobileMenuButton" class="md:hidden text-3xl text-[#070404]">&#9776;</button>
+            
+            <!-- Menú de navegación (modificado para móvil) -->
+            <nav id="mobileMenu" class="hidden md:flex md:items-center md:space-x-8 w-full md:w-auto mt-4 md:mt-0">
+                <a href="https://www.caminosdelser.co/#about" class="block text-center md:inline-block py-2 md:py-0 text-[#6B6661] hover:text-[#E8A613]">Sobre Mí</a>
+                <a href="https://www.caminosdelser.co/#services" class="block text-center md:inline-block py-2 md:py-0 text-[#6B6661] hover:text-[#E8A613]">Servicios</a>
+                <a href="index.html" class="block text-center md:inline-block py-2 md:py-0 text-[#E8A613] font-semibold">Escala DPvP</a>
+                <a href="https://www.caminosdelser.co/#contact" class="block text-center md:inline-block py-2 md:py-0 text-[#6B6661] hover:text-[#E8A613]">Contacto</a>
             </nav>
-            <button class="md:hidden text-3xl text-[#070404]">&#9776;</button>
         </div>
     </header>
 
@@ -161,7 +164,7 @@
                     <input type="number" id="num_mascotas" placeholder="N° de mascotas" class="input-styled" required>
                 </div>
 
-                <div class="md:col-span-2 text-center mt-6">
+                <div class="md:col-span-2 text-center mt-2">
                     <button type="submit" class="btn-brand">Comenzar Cuestionario</button>
                 </div>
             </form>
@@ -189,12 +192,10 @@
                         </span>
                     </label>
                 </div>
-                
                 <!-- hCaptcha en su posición final -->
-                <div class="flex justify-center mt-8">
-                    <div class="h-captcha" data-sitekey=a974e31c-86e4-4900-97f4-0f80d29c8b7c></div>
+                <div class="md:col-span-2 flex justify-center mt-6">
+                    <div class="h-captcha" data-sitekey="a974e31c-86e4-4900-97f4-0f80d29c8b7c"></div>
                 </div>
-
                 <div class="text-center mt-8">
                     <button type="submit" id="submitButton" class="btn-brand">Finalizar y Enviar</button>
                 </div>
@@ -350,8 +351,7 @@
             tiempoConvivenciaWrapper.classList.toggle('hidden', value === 'solo_novios');
             tiempoConvivenciaInput.required = (value !== 'solo_novios');
         });
-
-        // Lógica del primer formulario (sin captcha)
+        
         formInicial.addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -383,19 +383,18 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Lógica del segundo formulario (con captcha)
         formCuestionario.addEventListener('submit', async (e) => {
             e.preventDefault();
+            submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...';
             
-            // Verificación del captcha aquí, en el segundo formulario
             const hcaptchaToken = document.querySelector('#formCuestionario [name=h-captcha-response]').value;
             if (!hcaptchaToken) {
                 alert('Por favor, completa el captcha para continuar.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Finalizar y Enviar';
                 return;
             }
-            
-            submitButton.disabled = true;
-            submitButton.textContent = 'Enviando...';
 
             const formData = new FormData(formCuestionario);
             const respuestas = {};
@@ -428,7 +427,7 @@
                 demograficos: datosPareja,
                 resultados: resultadosFinales,
                 detalles: respuestas,
-                hcaptchaToken: hcaptchaToken // Se añade el token aquí
+                hcaptchaToken: hcaptchaToken 
             };
             
             sessionStorage.setItem('dpvpResultados', JSON.stringify(datosCompletos));
@@ -456,9 +455,18 @@
                 submitButton.textContent = 'Finalizar y Enviar';
             }
         });
+    </script>
+    <script>
+        // Lógica para el menú móvil
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
 
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        });
     </script>
 </body>
 </html>
-
 
