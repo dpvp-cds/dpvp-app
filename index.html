@@ -2,7 +2,7 @@
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>Escala DPvP - Diagnóstico en Proyecto de Vida en Pareja</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -161,7 +161,12 @@
                     <input type="number" id="num_mascotas" placeholder="N° de mascotas" class="input-styled" required>
                 </div>
 
-                <div class="md:col-span-2 text-center mt-6">
+                <!-- hCaptcha movido aquí temporalmente para depuración -->
+                <div class="md:col-span-2 flex justify-center mt-6">
+                    <div class="h-captcha" data-sitekey="PEGA_AQUÍ_TU_SITEKEY_PÚBLICA"></div>
+                </div>
+
+                <div class="md:col-span-2 text-center mt-2">
                     <button type="submit" class="btn-brand">Comenzar Cuestionario</button>
                 </div>
             </form>
@@ -189,13 +194,8 @@
                         </span>
                     </label>
                 </div>
-                
-                <!-- hCaptcha -->
-                <div class="flex justify-center mt-8">
-                    <div class="h-captcha" data-sitekey="PEGA_AQUÍ_TU_SITEKEY_PÚBLICA"></div>
-                </div>
 
-                <div class="text-center mt-6">
+                <div class="text-center mt-8">
                     <button type="submit" id="submitButton" class="btn-brand">Finalizar y Enviar</button>
                 </div>
             </form>
@@ -351,9 +351,17 @@
             tiempoConvivenciaInput.required = (value !== 'solo_novios');
         });
 
+        // Lógica de Captcha movida al primer formulario
         formInicial.addEventListener('submit', (e) => {
             e.preventDefault();
             
+            // Verificación del captcha ahora aquí
+            const hcaptchaToken = document.querySelector('#formInicial [name=h-captcha-response]').value;
+            if (!hcaptchaToken) {
+                alert('Por favor, completa el captcha para continuar.');
+                return;
+            }
+
             const numHijosInput = document.getElementById('num_hijos');
             const numMascotasInput = document.getElementById('num_mascotas');
             if (numHijosInput.value === '') numHijosInput.value = 0;
@@ -371,7 +379,8 @@
                 tipo_union: tipoUnionSelect.value,
                 anos_casados: anosCasadosInput.value || 0,
                 num_hijos: numHijosInput.value,
-                num_mascotas: numMascotasInput.value
+                num_mascotas: numMascotasInput.value,
+                hcaptchaToken: hcaptchaToken // Guardamos el token para el envío final
             };
             
             preguntasContainer.innerHTML = '';
@@ -382,18 +391,13 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
+        // Lógica del segundo formulario ahora solo envía los datos
         formCuestionario.addEventListener('submit', async (e) => {
             e.preventDefault();
             submitButton.disabled = true;
             submitButton.textContent = 'Enviando...';
-
-            const hcaptchaToken = document.querySelector('#formCuestionario [name=h-captcha-response]').value;
-            if (!hcaptchaToken) {
-                alert('Por favor, completa el captcha para finalizar.');
-                submitButton.disabled = false;
-                submitButton.textContent = 'Finalizar y Enviar';
-                return;
-            }
+            
+            // Ya no se verifica el captcha aquí
 
             const formData = new FormData(formCuestionario);
             const respuestas = {};
@@ -422,11 +426,12 @@
                 }, 0);
             }
 
+            // El hcaptchaToken se recupera del objeto datosPareja
             const datosCompletos = {
                 demograficos: datosPareja,
                 resultados: resultadosFinales,
                 detalles: respuestas,
-                hcaptchaToken: hcaptchaToken 
+                hcaptchaToken: datosPareja.hcaptchaToken 
             };
             
             sessionStorage.setItem('dpvpResultados', JSON.stringify(datosCompletos));
