@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- El script de hCaptcha se ha eliminado -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -85,6 +84,27 @@
         .cookie-button { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; white-space: nowrap; }
         .cookie-button:hover { background-color: #2980b9; }
         .cookie-banner.hidden { display: none; }
+        
+        /* --- ESTILOS PARA EL NUEVO CAPTCHA VISUAL --- */
+        .captcha-box {
+            position: relative;
+            width: 180px;
+            height: 60px;
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer; /* Invita al usuario a recargar si es necesario */
+        }
+        .captcha-box span {
+            position: absolute;
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #374151;
+            user-select: none; /* Evita que el texto sea seleccionable */
+            filter: blur(0.5px);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -188,11 +208,16 @@
                     </label>
                 </div>
 
-                <!-- Captcha Matemático -->
-                <div class="md:col-span-2 flex flex-col items-center justify-center mt-6 space-y-3">
-                    <label for="captchaInput" id="captchaLabel" class="font-semibold text-lg text-[#070404]"></label>
-                    <input type="number" id="captchaInput" placeholder="Resultado" class="input-styled w-32 text-center" required>
-                    <input type="hidden" id="captchaCorrectAnswer">
+                <!-- NUEVO Captcha Visual Matemático -->
+                <div class="md:col-span-2 flex flex-col items-center justify-center mt-8 space-y-3">
+                    <p class="font-medium text-center">Por seguridad, resuelva la siguiente operación:</p>
+                    <div class="flex items-center space-x-4">
+                         <div id="captchaContainer" class="captcha-box" title="Haz clic para generar una nueva operación">
+                            <!-- Los números se generarán aquí con JavaScript -->
+                        </div>
+                        <input type="number" id="captchaInput" placeholder="Resultado" class="input-styled w-32 text-center" required>
+                        <input type="hidden" id="captchaCorrectAnswer">
+                    </div>
                 </div>
 
                 <div class="text-center mt-8">
@@ -233,7 +258,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             sessionStorage.removeItem('terapeutaMode');
-            // Inicialización del menú móvil
             const mobileMenuButton = document.getElementById('mobileMenuButton');
             const mobileMenu = document.getElementById('mobileMenu');
             if (mobileMenuButton && mobileMenu) {
@@ -265,16 +289,41 @@
         const tiempoConvivenciaWrapper = document.getElementById('tiempo_convivencia_wrapper');
         const tiempoConvivenciaInput = document.getElementById('tiempo_convivencia');
         const submitButton = document.getElementById('submitButton');
+        const captchaContainer = document.getElementById('captchaContainer');
 
         let datosPareja = {};
 
-        function generarCaptchaMatematico() {
-            const num1 = Math.floor(Math.random() * 9) + 1; // 1 to 9
-            const num2 = Math.floor(Math.random() * 9) + 1; // 1 to 9
+        function generarCaptchaVisual() {
+            const num1 = Math.floor(Math.random() * 9) + 1;
+            const num2 = Math.floor(Math.random() * 9) + 1;
             const correctAnswer = num1 * num2;
-            document.getElementById('captchaLabel').textContent = `Por seguridad, resuelve: ${num1} x ${num2} =`;
+            
+            captchaContainer.innerHTML = ''; // Limpiar el contenedor
+
+            const characters = [num1.toString(), 'x', num2.toString()];
+            
+            characters.forEach((char, index) => {
+                const span = document.createElement('span');
+                span.textContent = char;
+
+                // Estilos aleatorios para la distorsión
+                const top = Math.random() * 40 - 10; // -10% a 30%
+                const left = (index * 30) + (Math.random() * 20 - 10); // Posición base + aleatoriedad
+                const rotation = Math.random() * 40 - 20; // -20 a 20 grados
+
+                span.style.top = `${top}%`;
+                span.style.left = `${left}%`;
+                span.style.transform = `rotate(${rotation}deg)`;
+
+                captchaContainer.appendChild(span);
+            });
+
             document.getElementById('captchaCorrectAnswer').value = correctAnswer;
-            document.getElementById('captchaInput').value = ''; 
+            document.getElementById('captchaInput').value = '';
+        }
+
+        if (captchaContainer) {
+            captchaContainer.addEventListener('click', generarCaptchaVisual);
         }
 
         function renderizarPreguntas() {
@@ -373,7 +422,7 @@
             };
             preguntasContainer.innerHTML = '';
             renderizarPreguntas();
-            generarCaptchaMatematico(); // Genera el captcha al mostrar el cuestionario
+            generarCaptchaVisual();
             seccionDatos.classList.add('hidden');
             seccionCuestionario.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -382,12 +431,11 @@
         formCuestionario.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // --- Verificación del Captcha Matemático ---
             const userAnswer = document.getElementById('captchaInput').value;
             const correctAnswer = document.getElementById('captchaCorrectAnswer').value;
             if (parseInt(userAnswer, 10) !== parseInt(correctAnswer, 10)) {
                 alert('La respuesta de la operación matemática es incorrecta. Inténtalo de nuevo.');
-                generarCaptchaMatematico(); // Genera una nueva pregunta
+                generarCaptchaVisual();
                 return; 
             }
 
@@ -421,7 +469,6 @@
                 }, 0);
             }
 
-            // Ya no se envía el hcaptchaToken
             const datosCompletos = {
                 demograficos: datosPareja,
                 resultados: resultadosFinales,
