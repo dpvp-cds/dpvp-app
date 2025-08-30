@@ -208,16 +208,17 @@
                     </label>
                 </div>
 
-                <!-- NUEVO Captcha Visual Matemático -->
+                <!-- Captcha Visual Matemático con instrucción -->
                 <div class="md:col-span-2 flex flex-col items-center justify-center mt-8 space-y-3">
                     <p class="font-medium text-center">Por seguridad, resuelva la siguiente operación:</p>
                     <div class="flex items-center space-x-4">
-                         <div id="captchaContainer" class="captcha-box" title="Haz clic para generar una nueva operación">
+                         <div id="captchaContainer" class="captcha-box">
                             <!-- Los números se generarán aquí con JavaScript -->
                         </div>
                         <input type="number" id="captchaInput" placeholder="Resultado" class="input-styled w-32 text-center" required>
                         <input type="hidden" id="captchaCorrectAnswer">
                     </div>
+                    <p class="text-xs text-gray-500">Haz clic en el cuadro para generar otra operación.</p>
                 </div>
 
                 <div class="text-center mt-8">
