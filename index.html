@@ -161,7 +161,12 @@
                     <input type="number" id="num_mascotas" placeholder="N° de mascotas" class="input-styled" required>
                 </div>
 
-                <div class="md:col-span-2 text-center mt-6">
+                <!-- hCaptcha movido aquí temporalmente para depuración -->
+                <div class="md:col-span-2 flex justify-center mt-6">
+                    <div class="h-captcha" data-sitekey="a974e31c-86e4-4900-97f4-0f80d29c8b7c"></div>
+                </div>
+
+                <div class="md:col-span-2 text-center mt-2">
                     <button type="submit" class="btn-brand">Comenzar Cuestionario</button>
                 </div>
             </form>
@@ -188,11 +193,6 @@
                             Acepto la <a href="https://caminosdelser.co/politicadatos.html" target="_blank" rel="noopener noreferrer" class="underline text-[#E8A613] hover:text-[#d4940f]">política de tratamiento de datos de CAMINOS DEL SER.</a>
                         </span>
                     </label>
-                </div>
-                
-                <!-- hCaptcha en su posición final -->
-                <div class="flex justify-center mt-8">
-                    <div class="h-captcha" data-sitekey="PEGA_AQUÍ_TU_SITEKEY_PÚBLICA"></div>
                 </div>
 
                 <div class="text-center mt-8">
@@ -351,10 +351,17 @@
             tiempoConvivenciaInput.required = (value !== 'solo_novios');
         });
 
-        // Lógica del primer formulario (sin captcha)
+        // Lógica de Captcha movida al primer formulario
         formInicial.addEventListener('submit', (e) => {
             e.preventDefault();
             
+            // Verificación del captcha ahora aquí
+            const hcaptchaToken = document.querySelector('#formInicial [name=h-captcha-response]').value;
+            if (!hcaptchaToken) {
+                alert('Por favor, completa el captcha para continuar.');
+                return;
+            }
+
             const numHijosInput = document.getElementById('num_hijos');
             const numMascotasInput = document.getElementById('num_mascotas');
             if (numHijosInput.value === '') numHijosInput.value = 0;
@@ -372,7 +379,8 @@
                 tipo_union: tipoUnionSelect.value,
                 anos_casados: anosCasadosInput.value || 0,
                 num_hijos: numHijosInput.value,
-                num_mascotas: numMascotasInput.value
+                num_mascotas: numMascotasInput.value,
+                hcaptchaToken: hcaptchaToken // Guardamos el token para el envío final
             };
             
             preguntasContainer.innerHTML = '';
@@ -383,19 +391,13 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Lógica del segundo formulario (con captcha)
+        // Lógica del segundo formulario ahora solo envía los datos
         formCuestionario.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            // Verificación del captcha aquí
-            const hcaptchaToken = document.querySelector('#formCuestionario [name=h-captcha-response]').value;
-            if (!hcaptchaToken) {
-                alert('Por favor, completa el captcha para continuar.');
-                return;
-            }
-            
             submitButton.disabled = true;
             submitButton.textContent = 'Enviando...';
+            
+            // Ya no se verifica el captcha aquí
 
             const formData = new FormData(formCuestionario);
             const respuestas = {};
@@ -424,11 +426,12 @@
                 }, 0);
             }
 
+            // El hcaptchaToken se recupera del objeto datosPareja
             const datosCompletos = {
                 demograficos: datosPareja,
                 resultados: resultadosFinales,
                 detalles: respuestas,
-                hcaptchaToken: hcaptchaToken // Se añade el token aquí
+                hcaptchaToken: datosPareja.hcaptchaToken 
             };
             
             sessionStorage.setItem('dpvpResultados', JSON.stringify(datosCompletos));
