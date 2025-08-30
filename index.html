@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <!-- El script de hCaptcha se ha eliminado -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -94,10 +94,7 @@
             <a href="index.html">
                 <img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto">
             </a>
-            <!-- Botón del menú móvil -->
             <button id="mobileMenuButton" class="md:hidden text-3xl text-[#070404]">&#9776;</button>
-            
-            <!-- Menú de navegación (modificado para móvil) -->
             <nav id="mobileMenu" class="hidden md:flex md:items-center md:space-x-8 w-full md:w-auto mt-4 md:mt-0">
                 <a href="https://www.caminosdelser.co/#about" class="block text-center md:inline-block py-2 md:py-0 text-[#6B6661] hover:text-[#E8A613]">Sobre Mí</a>
                 <a href="https://www.caminosdelser.co/#services" class="block text-center md:inline-block py-2 md:py-0 text-[#6B6661] hover:text-[#E8A613]">Servicios</a>
@@ -176,7 +173,6 @@
                 <div id="preguntasContainer"></div>
                 
                 <div class="mt-10 pt-6 border-t border-gray-200 space-y-4">
-                    <!-- Sincerity Checkbox -->
                     <label class="flex items-center justify-center checkbox-label">
                         <input type="checkbox" id="sinceridadCheck" required class="h-4 w-4 text-[#E8A613] border-gray-300 rounded focus:ring-[#d4940f]">
                         <span class="ml-3 text-center">
@@ -184,7 +180,6 @@
                         </span>
                     </label>
                     
-                    <!-- Data Policy Checkbox -->
                     <label class="flex items-center justify-center checkbox-label">
                         <input type="checkbox" id="politicaDatosCheck" required class="h-4 w-4 text-[#E8A613] border-gray-300 rounded focus:ring-[#d4940f]">
                         <span class="ml-3 text-center">
@@ -192,10 +187,14 @@
                         </span>
                     </label>
                 </div>
-                <!-- hCaptcha en su posición final -->
-                <div class="md:col-span-2 flex justify-center mt-6">
-                    <div class="h-captcha" data-sitekey="a974e31c-86e4-4900-97f4-0f80d29c8b7c"></div>
+
+                <!-- Captcha Matemático -->
+                <div class="md:col-span-2 flex flex-col items-center justify-center mt-6 space-y-3">
+                    <label for="captchaInput" id="captchaLabel" class="font-semibold text-lg text-[#070404]"></label>
+                    <input type="number" id="captchaInput" placeholder="Resultado" class="input-styled w-32 text-center" required>
+                    <input type="hidden" id="captchaCorrectAnswer">
                 </div>
+
                 <div class="text-center mt-8">
                     <button type="submit" id="submitButton" class="btn-brand">Finalizar y Enviar</button>
                 </div>
@@ -234,6 +233,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             sessionStorage.removeItem('terapeutaMode');
+            // Inicialización del menú móvil
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
         });
 
         const ambitos = {
@@ -261,6 +268,15 @@
 
         let datosPareja = {};
 
+        function generarCaptchaMatematico() {
+            const num1 = Math.floor(Math.random() * 9) + 1; // 1 to 9
+            const num2 = Math.floor(Math.random() * 9) + 1; // 1 to 9
+            const correctAnswer = num1 * num2;
+            document.getElementById('captchaLabel').textContent = `Por seguridad, resuelve: ${num1} x ${num2} =`;
+            document.getElementById('captchaCorrectAnswer').value = correctAnswer;
+            document.getElementById('captchaInput').value = ''; 
+        }
+
         function renderizarPreguntas() {
             let preguntaIndex = 1;
             for (const ambito in ambitos) {
@@ -275,12 +291,10 @@
                     const preguntaWrapper = document.createElement('div');
                     preguntaWrapper.className = 'mb-5';
                     preguntaWrapper.id = `pregunta-wrapper-${preguntaIndex}`;
-                    
                     const preguntaP = document.createElement('p');
                     preguntaP.className = 'font-medium mb-3';
                     preguntaP.textContent = `${preguntaIndex}. ${pregunta}`;
                     preguntaWrapper.appendChild(preguntaP);
-
                     const opcionesDiv = document.createElement('div');
                     ['Ambos', 'Solo Uno', 'Ninguno'].forEach(opcion => {
                         const opcionWrapper = document.createElement('div');
@@ -299,25 +313,11 @@
                         opcionesDiv.appendChild(opcionWrapper);
                     });
                     preguntaWrapper.appendChild(opcionesDiv);
-
                     const subPreguntaDiv = document.createElement('div');
                     subPreguntaDiv.className = 'sub-question pl-4';
                     subPreguntaDiv.id = `sub-q-${preguntaIndex}`;
-                    subPreguntaDiv.innerHTML = `
-                        <p class="font-medium text-sm text-gray-600 mb-2">¿Quién fue?</p>
-                        <div class="flex items-center space-x-4">
-                            <div class="radio-option">
-                                <input type="radio" id="q${preguntaIndex}_quien_m1" name="q${preguntaIndex}_quien" value="Miembro 1">
-                                <label for="q${preguntaIndex}_quien_m1" class="text-sm !px-3 !py-1">${datosPareja.m1_nombre || 'Miembro 1'}</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" id="q${preguntaIndex}_quien_m2" name="q${preguntaIndex}_quien" value="Miembro 2">
-                                <label for="q${preguntaIndex}_quien_m2" class="text-sm !px-3 !py-1">${datosPareja.m2_nombre || 'Miembro 2'}</label>
-                            </div>
-                        </div>
-                    `;
+                    subPreguntaDiv.innerHTML = `<p class="font-medium text-sm text-gray-600 mb-2">¿Quién fue?</p><div class="flex items-center space-x-4"><div class="radio-option"><input type="radio" id="q${preguntaIndex}_quien_m1" name="q${preguntaIndex}_quien" value="Miembro 1"><label for="q${preguntaIndex}_quien_m1" class="text-sm !px-3 !py-1">${datosPareja.m1_nombre || 'Miembro 1'}</label></div><div class="radio-option"><input type="radio" id="q${preguntaIndex}_quien_m2" name="q${preguntaIndex}_quien" value="Miembro 2"><label for="q${preguntaIndex}_quien_m2" class="text-sm !px-3 !py-1">${datosPareja.m2_nombre || 'Miembro 2'}</label></div></div>`;
                     preguntaWrapper.appendChild(subPreguntaDiv);
-                    
                     ambitoDiv.appendChild(preguntaWrapper);
                     preguntaIndex++;
                 });
@@ -330,7 +330,6 @@
                 const preguntaIndex = e.target.name.replace('q', '');
                 const subPreguntaDiv = document.getElementById(`sub-q-${preguntaIndex}`);
                 const subRadios = subPreguntaDiv.querySelectorAll('input[type="radio"]');
-                
                 if (e.target.value === 'Solo Uno') {
                     subPreguntaDiv.classList.add('visible');
                     subRadios.forEach(radio => radio.required = true);
@@ -354,12 +353,10 @@
         
         formInicial.addEventListener('submit', (e) => {
             e.preventDefault();
-            
             const numHijosInput = document.getElementById('num_hijos');
             const numMascotasInput = document.getElementById('num_mascotas');
             if (numHijosInput.value === '') numHijosInput.value = 0;
             if (numMascotasInput.value === '') numMascotasInput.value = 0;
-
             datosPareja = {
                 m1_nombre: document.getElementById('miembro1_nombre').value,
                 m1_edad: document.getElementById('miembro1_edad').value,
@@ -374,10 +371,9 @@
                 num_hijos: numHijosInput.value,
                 num_mascotas: numMascotasInput.value
             };
-            
             preguntasContainer.innerHTML = '';
             renderizarPreguntas();
-
+            generarCaptchaMatematico(); // Genera el captcha al mostrar el cuestionario
             seccionDatos.classList.add('hidden');
             seccionCuestionario.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -385,16 +381,18 @@
 
         formCuestionario.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // --- Verificación del Captcha Matemático ---
+            const userAnswer = document.getElementById('captchaInput').value;
+            const correctAnswer = document.getElementById('captchaCorrectAnswer').value;
+            if (parseInt(userAnswer, 10) !== parseInt(correctAnswer, 10)) {
+                alert('La respuesta de la operación matemática es incorrecta. Inténtalo de nuevo.');
+                generarCaptchaMatematico(); // Genera una nueva pregunta
+                return; 
+            }
+
             submitButton.disabled = true;
             submitButton.textContent = 'Enviando...';
-            
-            const hcaptchaToken = document.querySelector('#formCuestionario [name=h-captcha-response]').value;
-            if (!hcaptchaToken) {
-                alert('Por favor, completa el captcha para continuar.');
-                submitButton.disabled = false;
-                submitButton.textContent = 'Finalizar y Enviar';
-                return;
-            }
 
             const formData = new FormData(formCuestionario);
             const respuestas = {};
@@ -423,11 +421,11 @@
                 }, 0);
             }
 
+            // Ya no se envía el hcaptchaToken
             const datosCompletos = {
                 demograficos: datosPareja,
                 resultados: resultadosFinales,
                 detalles: respuestas,
-                hcaptchaToken: hcaptchaToken 
             };
             
             sessionStorage.setItem('dpvpResultados', JSON.stringify(datosCompletos));
@@ -454,17 +452,6 @@
                 submitButton.disabled = false;
                 submitButton.textContent = 'Finalizar y Enviar';
             }
-        });
-    </script>
-    <script>
-        // Lógica para el menú móvil
-        document.addEventListener('DOMContentLoaded', () => {
-            const mobileMenuButton = document.getElementById('mobileMenuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
-
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
         });
     </script>
 </body>
