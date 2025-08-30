@@ -1,32 +1,64 @@
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import { Resend } from "resend"; // <-- ESTA LÍNEA ES CLAVE
+import { Resend } from "resend";
 
-// Inicializa Firebase Admin SDK solo si no se ha inicializado antes
+// --- Inicialización de servicios (sin cambios) ---
 if (!getApps().length) {
   initializeApp({
     credential: cert(JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON))
   });
 }
-
-const db = getFirestore(); // Solo una vez declarado
+const db = getFirestore();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// --- Función principal del handler ---
 export default async function handler(request, response) {
-  const data = request.body;
+  // 1. --- VERIFICACIÓN DE HCAPTCHA (NUEVO BLOQUE ESENCIAL) ---
+  const { hcaptchaToken, ...data } = request.body; // Extraemos el token y el resto de los datos
+  const secretKey = process.env.HCAPTCHA_SECRET_KEY;
+
+  if (!hcaptchaToken) {
+    return response.status(400).json({ message: "El token de hCaptcha es requerido." });
+  }
+
+  try {
+    const params = new URLSearchParams();
+    params.append('response', hcaptchaToken);
+    params.append('secret', secretKey);
+
+    const hcaptchaResponse = await fetch('https://api.hcaptcha.com/siteverify', {
+      method: 'POST',
+      body: params,
+    });
+
+    const verificationData = await hcaptchaResponse.json();
+
+    if (!verificationData.success) {
+      console.error("Fallo en la verificación de hCaptcha:", verificationData['error-codes']);
+      return response.status(400).json({ message: "La verificación de hCaptcha falló." });
+    }
+    
+    // Si la verificación es exitosa, el código continúa...
+
+  } catch (error) {
+    console.error("Error contactando el servidor de hCaptcha:", error);
+    return response.status(500).json({ message: "Error interno al verificar el captcha." });
+  }
+
+  // 2. --- LÓGICA EXISTENTE (SIN CAMBIOS) ---
+  // A partir de aquí, tu código original se ejecuta con normalidad
   const { demograficos, resultados, detalles } = data;
 
   // Guardar en Firestore
   try {
-    const docRef = await db.collection("reportes").add({
+    await db.collection("reportes").add({
       ...data,
-      fecha: new Date().toISOString(), // Añade una marca de tiempo
+      fecha: new Date().toISOString(),
     });
-    console.log("Documento escrito con ID: ", docRef.id);
   } catch (e) {
     console.error("Error al añadir documento a Firestore: ", e);
-    // Opcional: podrías decidir si continuar o no si la base de datos falla
+    // Considerar si se debe detener la ejecución aquí
   }
 
   // Generar y enviar el PDF (el código del PDF no cambia)
@@ -104,54 +136,14 @@ export default async function handler(request, response) {
   y -= 20;
   await drawText("Respuestas Detalladas", { bold: true, size: 16 });
   const ambitosTextos = {
-    "Ámbito Económico": [
-      "1. ¿Ambos participan en la construcción del presupuesto familiar?",
-      "2. ¿Ambos miembros aportan económicamente?",
-      "3. ¿Ambos consideran que tienen un buen acuerdo en lo económico?",
-      "4. ¿Ambos son sinceros con su pareja en el tema económico?",
-    ],
-    "Ámbito Emocional": [
-      "5. ¿Ambos consideran que hay adecuada comunicación en la pareja?",
-      "6. ¿Ambos se respetan totalmente, sin presencia de algún tipo de maltrato?",
-      "7. ¿Ambos sienten aún amor por su pareja?",
-      "8. ¿Ambos están de acuerdo en todos los temas sexuales en la pareja?",
-    ],
-    "Ámbito Salud": [
-      "9. ¿Ambos están sanos, sin ninguna enfermedad/discapacidad grave?",
-      "10. ¿Ambos tienen cobertura de salud?",
-      "11. ¿Ambos atienden con celeridad cuando se presenta algún tema de salud?",
-      "12. ¿Ambos apoyan cualquier situación de salud que se presente en la familia?",
-    ],
-    "Ámbito Laboral": [
-      "13. ¿Ambos miembros se sienten realizados profesional/laboralmente?",
-      "14. ¿Ambos miembros tienen algún tipo de trabajo remunerado?",
-      "15. ¿Ambos han propuesto un plan de vida para la vejez?",
-      "16. ¿Ambos se sienten apoyados laboralmente por su pareja?",
-    ],
-    "Ámbito Ocio": [
-      "17. ¿Ambos reconocen gustos y hobbies en común?",
-      "18. ¿Ambos han creado/propuesto algún espacio exclusivo para compartir como pareja?",
-      "19. ¿Ambos miembros tienen espacios individuales para sí mismos?",
-      "20. ¿Ambos celebran y recuerdan fechas especiales?",
-    ],
-    "Ámbito Hijos": [
-      "21. ¿Ambos hablaron con claridad el tema de los hijos antes de vivir en pareja?",
-      "22. ¿Ambos estuvieron o están de acuerdo en el número de hijos a tener?",
-      "23. ¿Ambos se sienten libres de presión por el tema de los hijos?",
-      "24. ¿Ambos están de acuerdo en el tema de mascotas en el hogar?",
-    ],
-    "Ámbito Hogar": [
-      "25. ¿Ambos participaron en la escogencia del lugar donde viven?",
-      "26. ¿Ambos se sienten a gusto y felices en el lugar donde viven?",
-      "27. ¿Ambos permitirían convivir con otras personas diferentes a la pareja e hijos?",
-      "28. ¿Ambos realizan por igual o bajo un acuerdo las tareas del hogar?",
-    ],
-    "Ámbito Espiritual": [
-      "29. ¿Ambos miembros comparten la misma creencia religiosa/espiritual?",
-      "30. ¿Ambos aceptan las creencias personales de la pareja?",
-      "31. ¿Ambos miembros de la pareja son felices?",
-      "32. ¿Ambos miembros desean continuar en su relación de pareja actual?",
-    ],
+    "Ámbito Económico": [ "1. ¿Ambos participan en la construcción del presupuesto familiar?", "2. ¿Ambos miembros aportan económicamente?", "3. ¿Ambos consideran que tienen un buen acuerdo en lo económico?", "4. ¿Ambos son sinceros con su pareja en el tema económico?", ],
+    "Ámbito Emocional": [ "5. ¿Ambos consideran que hay adecuada comunicación en la pareja?", "6. ¿Ambos se respetan totalmente, sin presencia de algún tipo de maltrato?", "7. ¿Ambos sienten aún amor por su pareja?", "8. ¿Ambos están de acuerdo en todos los temas sexuales en la pareja?", ],
+    "Ámbito Salud": [ "9. ¿Ambos están sanos, sin ninguna enfermedad/discapacidad grave?", "10. ¿Ambos tienen cobertura de salud?", "11. ¿Ambos atienden con celeridad cuando se presenta algún tema de salud?", "12. ¿Ambos apoyan cualquier situación de salud que se presente en la familia?", ],
+    "Ámbito Laboral": [ "13. ¿Ambos miembros se sienten realizados profesional/laboralmente?", "14. ¿Ambos miembros tienen algún tipo de trabajo remunerado?", "15. ¿Ambos han propuesto un plan de vida para la vejez?", "16. ¿Ambos se sienten apoyados laboralmente por su pareja?", ],
+    "Ámbito Ocio": [ "17. ¿Ambos reconocen gustos y hobbies en común?", "18. ¿Ambos han creado/propuesto algún espacio exclusivo para compartir como pareja?", "19. ¿Ambos miembros tienen espacios individuales para sí mismos?", "20. ¿Ambos celebran y recuerdan fechas especiales?", ],
+    "Ámbito Hijos": [ "21. ¿Ambos hablaron con claridad el tema de los hijos antes de vivir en pareja?", "22. ¿Ambos estuvieron o están de acuerdo en el número de hijos a tener?", "23. ¿Ambos se sienten libres de presión por el tema de los hijos?", "24. ¿Ambos están de acuerdo en el tema de mascotas en el hogar?", ],
+    "Ámbito Hogar": [ "25. ¿Ambos participaron en la escogencia del lugar donde viven?", "26. ¿Ambos se sienten a gusto y felices en el lugar donde viven?", "27. ¿Ambos permitirían convivir con otras personas diferentes a la pareja e hijos?", "28. ¿Ambos realizan por igual o bajo un acuerdo las tareas del hogar?", ],
+    "Ámbito Espiritual": [ "29. ¿Ambos miembros comparten la misma creencia religiosa/espiritual?", "30. ¿Ambos aceptan las creencias personales de la pareja?", "31. ¿Ambos miembros de la pareja son felices?", "32. ¿Ambos miembros desean continuar en su relación de pareja actual?", ],
   };
   for (const ambito in detalles) {
     y -= 10;
@@ -186,9 +178,6 @@ export default async function handler(request, response) {
     });
     response.status(200).json({
       message: "Correo y guardado exitosos",
-      demograficos,
-      resultados,
-      detalles,
     });
   } catch (error) {
     console.error("Error al enviar el correo:", error);
