@@ -159,7 +159,7 @@ export default async function handler(request, response) {
     await resend.emails.send({
       from: "Reportes DPvP <onboarding@resend.dev>",
       to: "dpvp.cds@emcotic.com",
-      subject: `Nuevo Diagnóstico: ${demograficos.m1_nombre} y ${demograficos.m2_nombre}`,
+      subject: `Nuevo Diagnóstico DPvP: ${demograficos.m1_nombre} y ${demograficos.m2_nombre}`,
       html: "<p>Se adjunta el reporte en PDF con los resultados del diagnóstico DPvP.</p>",
       attachments: [
         {
@@ -176,4 +176,5 @@ export default async function handler(request, response) {
     response.status(500).json({ error: "Fallo al enviar el correo" });
   }
 }
+
 
