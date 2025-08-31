@@ -16,19 +16,12 @@
 </head>
 <body>
 
-    <!-- =============================================================== -->
-    <!-- NUEVO: Guardia de Seguridad                                     -->
-    <!-- =============================================================== -->
     <script>
-        // Este script se ejecuta antes de que se muestre nada en la página.
+        // Guardia de Seguridad: se ejecuta antes de mostrar nada.
         if (sessionStorage.getItem('terapeutaAuth') !== 'true') {
-            // Si el "pase de acceso" no existe o no es válido,
-            // redirigimos al usuario a la página de login.
             window.location.href = 'terapeuta-login.html';
         }
     </script>
-    <!-- =============================================================== -->
-
 
     <header class="bg-[#F8F7F2] py-4 px-8 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
@@ -64,7 +57,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Solo ejecuta la carga si el guardia de seguridad no redirigió al usuario
             if (sessionStorage.getItem('terapeutaAuth') === 'true') {
                 cargarReportes();
             }
@@ -97,9 +89,13 @@
                 let html = '<div class="divide-y divide-gray-200">';
                 reportes.forEach(reporte => {
                     const fecha = new Date(reporte.fecha).toLocaleString('es-CO', { dateStyle: 'long', timeStyle: 'short' });
-                    // Usamos la nueva estructura de datos que descubrimos
-                    const nombre1 = reporte.demograficos?.m1_nombre || 'N/A';
-                    const nombre2 = reporte.demograficos?.m2_nombre || 'N/A';
+                    
+                    // ===============================================================
+                    // CORRECCIÓN: Leemos los nombres desde la raíz del objeto reporte
+                    // ===============================================================
+                    const nombre1 = reporte.nombre1 || 'N/A';
+                    const nombre2 = reporte.nombre2 || 'N/A';
+                    // ===============================================================
 
                     html += `
                         <div class="report-item flex justify-between items-center py-4">
@@ -126,7 +122,6 @@
             }
         }
         
-        // Listener para los botones de eliminar
         document.getElementById('reportList').addEventListener('click', function(event) {
             if (event.target && event.target.classList.contains('btn-delete')) {
                 const reporteId = event.target.getAttribute('data-id');
@@ -140,7 +135,6 @@
 
         async function eliminarReporte(reporteId) {
             try {
-                // Asumimos que la función eliminar-reporte.js existe y funciona
                 const response = await fetch(`/api/eliminar-reporte?id=${reporteId}`, {
                     method: 'DELETE'
                 });
@@ -149,7 +143,6 @@
                     throw new Error('El servidor no pudo eliminar el reporte.');
                 }
                 
-                // Recargar la lista para mostrar el cambio
                 cargarReportes();
                 
             } catch (error) {
@@ -161,3 +154,4 @@
 
 </body>
 </html>
+
