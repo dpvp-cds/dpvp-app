@@ -3,148 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal del Terapeuta - DPvP</title>
+    <title>Portal de Reportes - DPvP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f4f7f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-        h1 {
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        thead th {
-            background-color: #3498db;
-            color: #ffffff;
-            font-weight: 600;
-        }
-        tbody tr:nth-of-type(even) {
-            background-color: #f8f9fa;
-        }
-        tbody tr:hover {
-            background-color: #e9ecef;
-        }
-        .loading, .error {
-            text-align: center;
-            padding: 20px;
-            font-style: italic;
-            color: #777;
-        }
-        .btn-delete {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-delete:hover {
-            background-color: #c0392b;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: #F8F7F2; color: #6B6661; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: #070404; }
+        .card { background-color: white; border-radius: 16px; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .report-item { transition: background-color 0.2s ease-in-out; }
+        .report-item:hover { background-color: #fafafa; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>📋 Portal del Terapeuta: Reportes DPvP</h1>
-        
-        <div id="reportes-container">
-            <p class="loading">Cargando reportes desde la base de datos...</p>
-            <table id="tabla-reportes" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>Fecha de Realización</th>
-                        <th>Miembro 1</th>
-                        <th>Miembro 2</th>
-                        <th>Ver Reporte</th>
-                        <th>Acciones</th> </tr>
-                </thead>
-                <tbody id="reportes-body">
-                    </tbody>
-            </table>
+    <!-- =============================================================== -->
+    <!-- NUEVO: Guardia de Seguridad                                     -->
+    <!-- =============================================================== -->
+    <script>
+        // Este script se ejecuta antes de que se muestre nada en la página.
+        if (sessionStorage.getItem('terapeutaAuth') !== 'true') {
+            // Si el "pase de acceso" no existe o no es válido,
+            // redirigimos al usuario a la página de login.
+            window.location.href = 'terapeuta-login.html';
+        }
+    </script>
+    <!-- =============================================================== -->
+
+
+    <header class="bg-[#F8F7F2] py-4 px-8 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html">
+                <img src="logoprincipal.png" alt="Logo Caminos del Ser" class="h-12 w-auto">
+            </a>
+            <nav class="hidden md:flex space-x-8 items-center">
+                <a href="portal.html" class="text-[#E8A613] font-semibold">Ver Reportes</a>
+                <a href="index.html" class="text-[#6B6661] hover:text-[#E8A613]">Nuevo Diagnóstico</a>
+                <button id="logoutButton" class="text-[#6B6661] hover:text-[#c0392b]">Cerrar Sesión</button>
+            </nav>
+            <button class="md:hidden text-3xl text-[#070404]">&#9776;</button>
         </div>
-    </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-20">
+        <div class="card">
+            <h1 class="text-3xl md:text-4xl font-bold mb-6">Historial de Reportes</h1>
+            <div id="loading" class="text-center py-8">
+                <p>Cargando reportes...</p>
+            </div>
+            <div id="reportList" class="hidden">
+                <!-- Los reportes se insertarán aquí dinámicamente -->
+            </div>
+        </div>
+    </main>
+    
+    <footer class="bg-[#070404] text-white py-12 mt-12">
+        <div class="container mx-auto text-center">
+            <p class="text-gray-400">&copy; 2025 Jorge Arango Castaño - Caminos del Ser.</p>
+        </div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            cargarReportes();
+            // Solo ejecuta la carga si el guardia de seguridad no redirigió al usuario
+            if (sessionStorage.getItem('terapeutaAuth') === 'true') {
+                cargarReportes();
+            }
+
+            const logoutBtn = document.getElementById('logoutButton');
+            if(logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    sessionStorage.removeItem('terapeutaAuth');
+                    window.location.href = 'terapeuta-login.html';
+                });
+            }
         });
 
         async function cargarReportes() {
-            const container = document.getElementById('reportes-container');
-            const table = document.getElementById('tabla-reportes');
-            const tableBody = document.getElementById('reportes-body');
-            
+            const loadingDiv = document.getElementById('loading');
+            const reportListDiv = document.getElementById('reportList');
+
             try {
                 const response = await fetch('/api/get-reportes');
-                if (!response.ok) throw new Error('Error en la respuesta del servidor');
-                
+                if (!response.ok) {
+                    throw new Error('No se pudo conectar con el servidor.');
+                }
                 const reportes = await response.json();
-                
-                container.innerHTML = '';
-                container.appendChild(table);
-                tableBody.innerHTML = '';
 
                 if (reportes.length === 0) {
-                    container.innerHTML = '<p class="loading">No se encontraron reportes en la base de datos.</p>';
+                    loadingDiv.textContent = 'No hay reportes guardados todavía.';
                     return;
                 }
 
+                let html = '<div class="divide-y divide-gray-200">';
                 reportes.forEach(reporte => {
-                    const fecha = new Date(reporte.fecha).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
-                    const fila = document.createElement('tr');
-                    fila.id = `reporte-${reporte.id}`; // Asignar un ID a la fila para poder borrarla
-                    
-                    fila.innerHTML = `
-                        <td>${fecha}</td>
-                        <td>${reporte.nombre1 || 'N/A'}</td>
-                        <td>${reporte.nombre2 || 'N/A'}</td>
-                        <td><a href="/reporte.html?id=${reporte.id}">Abrir</a></td>
-                        <td>
-                            <button class="btn-delete" data-id="${reporte.id}">Eliminar</button>
-                        </td>
+                    const fecha = new Date(reporte.fecha).toLocaleString('es-CO', { dateStyle: 'long', timeStyle: 'short' });
+                    // Usamos la nueva estructura de datos que descubrimos
+                    const nombre1 = reporte.demograficos?.m1_nombre || 'N/A';
+                    const nombre2 = reporte.demograficos?.m2_nombre || 'N/A';
+
+                    html += `
+                        <div class="report-item flex justify-between items-center py-4">
+                            <div>
+                                <a href="./reporte.html?id=${reporte.id}" class="font-bold text-lg text-[#070404] hover:text-[#E8A613]">${nombre1} y ${nombre2}</a>
+                                <p class="text-sm text-gray-500">Fecha: ${fecha}</p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <a href="./reporte.html?id=${reporte.id}" class="text-[#3498db] hover:underline">Ver</a>
+                                <button data-id="${reporte.id}" class="text-red-600 hover:underline btn-delete">Eliminar</button>
+                            </div>
+                        </div>
                     `;
-                    tableBody.appendChild(fila);
                 });
+                html += '</div>';
                 
-                table.style.display = 'table';
+                reportListDiv.innerHTML = html;
+                loadingDiv.classList.add('hidden');
+                reportListDiv.classList.remove('hidden');
 
             } catch (error) {
-                console.error('Error al cargar los reportes:', error);
-                container.innerHTML = `<p class="error">❌ No se pudieron cargar los reportes.</p>`;
+                console.error(error);
+                loadingDiv.textContent = 'Error al cargar los reportes.';
             }
         }
         
-        // --- NUEVA LÓGICA PARA ELIMINAR ---
-        document.getElementById('reportes-body').addEventListener('click', function(event) {
+        // Listener para los botones de eliminar
+        document.getElementById('reportList').addEventListener('click', function(event) {
             if (event.target && event.target.classList.contains('btn-delete')) {
                 const reporteId = event.target.getAttribute('data-id');
-                
-                // Pedimos confirmación para evitar borrados accidentales
                 const confirmacion = confirm('¿Estás seguro de que deseas eliminar este reporte? Esta acción es irreversible.');
                 
                 if (confirmacion) {
@@ -155,6 +140,7 @@
 
         async function eliminarReporte(reporteId) {
             try {
+                // Asumimos que la función eliminar-reporte.js existe y funciona
                 const response = await fetch(`/api/eliminar-reporte?id=${reporteId}`, {
                     method: 'DELETE'
                 });
@@ -162,15 +148,10 @@
                 if (!response.ok) {
                     throw new Error('El servidor no pudo eliminar el reporte.');
                 }
-
-                // Si se elimina correctamente, quitamos la fila de la tabla
-                const filaParaEliminar = document.getElementById(`reporte-${reporteId}`);
-                if (filaParaEliminar) {
-                    filaParaEliminar.remove();
-                }
                 
-                alert('Reporte eliminado exitosamente.');
-
+                // Recargar la lista para mostrar el cambio
+                cargarReportes();
+                
             } catch (error) {
                 console.error('Error al eliminar el reporte:', error);
                 alert('Ocurrió un error al intentar eliminar el reporte.');
